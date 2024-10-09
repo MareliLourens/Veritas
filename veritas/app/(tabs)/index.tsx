@@ -1,70 +1,158 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import CheckBox from 'expo-checkbox';
+import React, { useState } from 'react';
 
 export default function HomeScreen() {
+  const [isChecked, setIsChecked] = useState(false);
+
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container_big}>
+      <View style={styles.container}>
+        <Image style={styles.image} source={require('../../assets/images/signup.png')} />
+        <ThemedText type="title">Welcome</ThemedText>
+
+        <ThemedText style={styles.subtitle} type="subtitle">Start fact checking your work</ThemedText>
+        <View style={styles.inputcontainer}>
+          <ThemedText type="minititle" style={styles.inputtitle}>Email</ThemedText>
+          <TextInput
+            style={styles.input}
+            placeholderTextColor="#808089"
+            placeholder="Enter your email"
+          />
+        </View>
+        <View style={styles.inputcontainer}>
+          <ThemedText type="minititle" style={styles.inputtitle2}>Password</ThemedText>
+          <TextInput
+            style={styles.input}
+            placeholderTextColor="#808089"
+            secureTextEntry
+            placeholder="Enter your password"
+          />
+        </View>
+        <View style={styles.checkboxcontainer}>
+          <CheckBox
+            style={styles.checkbox}
+            value={isChecked}
+            onValueChange={setIsChecked}
+          />
+          <ThemedText type="subtitle" style={styles.checkboxtext}>Remember Me</ThemedText>
+        </View>
+
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Create Account</Text>
+        </TouchableOpacity>
+        <Image style={styles.signupwithimg} source={require('../../assets/images/signupwith.png')} />
+        <View style={styles.onlinesignupcontainer}>
+          <Image style={styles.onlineicon} source={require('../../assets/images/google.png')} />
+          <Image style={styles.onlineicon} source={require('../../assets/images/facebook.png')} />
+          <Image style={styles.onlineicon} source={require('../../assets/images/apple.png')} />
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container_big: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'white',
+    borderTopRightRadius: 35,
+    borderTopLeftRadius: 35,
+  },
+  image: {
+    height: 250,
+    width: 250,
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  subtitle: {
+    color: '#808089',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  inputcontainer: {
+    width: '100%',
+    height: 60,
+    marginBottom: 20,
+  },
+  inputtitle: {
+    color: "#000000",
+    height: 25,
+    width: "17%",
     position: 'absolute',
+    marginLeft: 30,
+    paddingLeft: 8,
+    backgroundColor: "#FFFFFF",
+    zIndex: 1,
+  },
+  inputtitle2: {
+    color: "#000000",
+    height: 25,
+    width: "28%",
+    position: 'absolute',
+    marginLeft: 30,
+    paddingLeft: 8,
+    backgroundColor: "#FFFFFF",
+    zIndex: 1,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#0FA5EF',
+    borderRadius: 15,
+    marginBottom: 20,
+    marginTop: 10,
+    fontSize: 16,
+    paddingLeft: 20,
+    fontFamily: 'MontserratReg',
+  },
+  checkboxcontainer: {
+    width: 150,
+    display: 'flex',
+    flexDirection: 'row',
+    marginLeft: -150,
+  },
+  checkbox: {
+    marginRight: 5,
+  },
+  checkboxtext: {
+    color: "#808089"
+  },
+  button: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#0FA5EF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 15,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontFamily: 'FuturaPTBold',
+  },
+  signupwithimg: {
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
+    objectFit: 'contain',
+  },
+  onlinesignupcontainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  onlineicon: {
+    objectFit: 'contain',
+    height: 50,
   },
 });
