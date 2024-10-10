@@ -35,8 +35,8 @@ export default function HomeScreen() {
           <ThemedText type="minititle" style={styles.inputtitle}>Email</ThemedText>
           <TextInput
             style={styles.input}
-            placeholderTextColor="#808089" // Placeholder text color
-            placeholder="Enter your email" // Placeholder text
+            placeholderTextColor="#808089" 
+            placeholder="Enter your email" 
           />
         </View>
 

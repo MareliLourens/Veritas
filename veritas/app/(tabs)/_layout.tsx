@@ -33,6 +33,7 @@ export default function TabLayout() {
         }}
       />
       {/* Define the second tab for History */}
+      
       <Tabs.Screen
         name="history" // The name of the screen for the History tab
         options={{

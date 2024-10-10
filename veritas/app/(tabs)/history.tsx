@@ -15,7 +15,7 @@ interface HistoryItem {
 const data: HistoryItem[] = [
   { id: 1, title: 'Lions are mammals', date: '20 June 2024', percentage: 100 },
   { id: 2, title: 'Capitec debt', date: '20 June 2024', percentage: 75 },
-  { id: 3, title: 'Document Name', date: '', percentage: 0 }
+  { id: 3, title: 'Document Name', date: 'Date', percentage: 0 }
 ];
 
 // Map through data (this is unused and can be removed)
