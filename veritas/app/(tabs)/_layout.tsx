@@ -1,33 +1,43 @@
+// Import necessary components from the Expo Router and React
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+// Import custom components and constants
+import { TabBarIcon } from '@/components/navigation/TabBarIcon'; // Custom icon component for tab bar
+import { Colors } from '@/constants/Colors'; // Color constants for the application
+import { useColorScheme } from '@/hooks/useColorScheme'; // Hook to determine the current color scheme (light or dark)
 
+// Define the TabLayout functional component
 export default function TabLayout() {
+  // Get the current color scheme (light or dark)
   const colorScheme = useColorScheme();
 
   return (
+    // Render the Tabs component with specific options
     <Tabs
       screenOptions={{
+        // Set the active tint color for the tab bar based on the current color scheme
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-                          //tabBarStyle: { display: 'none' },
+        headerShown: false, // Hide the header for the tabs
+                                       tabBarStyle: { display: 'none' }, // Uncomment to hide the tab bar
       }}>
+      {/* Define the first tab for Home */}
       <Tabs.Screen
-        name="index"
+        name="index" // The name of the screen, used for navigation
         options={{
-          title: 'Home',
+          title: 'Home', // Title displayed on the tab
+          // Render the tab bar icon conditionally based on whether the tab is focused
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
+      {/* Define the second tab for History */}
       <Tabs.Screen
-        name="histoy"
+        name="history" // The name of the screen for the History tab
         options={{
-          title: 'Histoy',
+          title: 'History', // Title displayed on the tab 
+          // Render the tab bar icon conditionally based on whether the tab is focused
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
