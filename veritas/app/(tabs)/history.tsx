@@ -1,5 +1,6 @@
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import React from 'react';
+import { ThemedText } from '@/components/ThemedText';
 
 interface HistoryItem {
   id: number;
@@ -26,28 +27,28 @@ export default function HistoryScreen() {
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.item}>
       <View style={styles.leftSection}>
-        <Image style={styles.icon} source={require('../../assets/images/icon.png')} />
+        <Image style={styles.icon} source={require('../../assets/images/document_icon.png')} />
         <View style={styles.textSection}>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.date}>{item.date}</Text>
         </View>
       </View>
-      <Text style={styles.percentage}>{item.percentage}</Text>
+      <Text style={styles.percentage}>{item.percentage}%</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>History</Text>
+      <View style={styles.background}></View>
+      <ThemedText type="title" style={styles.header}>History</ThemedText>
       <FlatList
         data={data}
         renderItem={renderItem}
       />
-      {/* Navigation Bar
-      <View style={styles.navBar}>
-        <Image style={styles.navIcon} source={require('../../assets/icons/home.png')} />
-        <Image style={styles.navIcon} source={require('../../assets/icons/history.png')} />
-        <Image style={styles.navIcon} source={require('../../assets/icons/user.png')} />
+      {/* <View style={styles.navBar}>
+        <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
+        <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
+        <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
       </View> */}
     </View>
   );
@@ -56,13 +57,19 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E6F7FF',
-    paddingTop: 50,
+    backgroundColor: '#B7E4FA',
+    paddingTop: 35,
     paddingHorizontal: 20,
   },
+  background:{
+    backgroundColor: '#FFFFFF',
+    height: 400,
+    width: 500,
+    position: 'absolute',
+    bottom: 0,
+  },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
     marginBottom: 20,
     color: '#000',
   },
@@ -70,39 +77,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F5F8FA',
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    height: 96,
   },
   leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 37,
+    height: 51,
     marginRight: 15,
+    objectFit: 'contain',
   },
   textSection: {
     justifyContent: 'center',
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#000',
+    marginBottom: 2
   },
   date: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#7D7D7D',
+    fontFamily: 'MontserratReg',
   },
   percentage: {
-    fontSize: 22,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#000',
   },

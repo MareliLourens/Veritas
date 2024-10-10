@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    height: 50,
+    height: 58,
     backgroundColor: '#0FA5EF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 20,
+    fontWeight: 'bold', 
     fontFamily: 'FuturaPTBold',
   },
   signupwithimg: {
