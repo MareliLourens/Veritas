@@ -26,7 +26,7 @@ export default function HistoryScreen() {
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.item}>
       <View style={styles.leftSection}>
-        <Image style={styles.icon} source={require('../../assets/images/icon.png')} />
+        <Image style={styles.icon} source={require('../assets/images/icon.png')} />
         <View style={styles.textSection}>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.date}>{item.date}</Text>

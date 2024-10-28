@@ -1,16 +1,32 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from './firebase';
 
-export default function HomeScreen() {
+export default function LoginScreen() {
   const [isChecked, setIsChecked] = useState(false);
+  const navigation = useNavigation();
 
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigation.navigate('HistoryScreen');
+    } catch (error) {
+      Alert.alert('Login Failed');
+    }
+  };
 
   return (
     <View style={styles.container_big}>
       <View style={styles.container}>
-        <Image style={styles.image} source={require('../../assets/images/signup.png')} />
+        <Image style={styles.image} source={require('../assets/images/signup.png')} />
         <ThemedText type="title">Welcome</ThemedText>
 
         <ThemedText style={styles.subtitle} type="subtitle">Start fact checking your work</ThemedText>
@@ -20,6 +36,8 @@ export default function HomeScreen() {
             style={styles.input}
             placeholderTextColor="#808089"
             placeholder="Enter your email"
+            onChangeText={setEmail}
+          value={email}
           />
         </View>
         <View style={styles.inputcontainer}>
@@ -29,6 +47,8 @@ export default function HomeScreen() {
             placeholderTextColor="#808089"
             secureTextEntry
             placeholder="Enter your password"
+            onChangeText={setPassword}
+          value={password}
           />
         </View>
         <View style={styles.checkboxcontainer}>
@@ -40,14 +60,16 @@ export default function HomeScreen() {
           <ThemedText type="subtitle" style={styles.checkboxtext}>Remember Me</ThemedText>
         </View>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Create Account</Text>
+        <TouchableOpacity style={styles.button}
+        onPress={() => navigation.navigate('HistoryScreen')}>
+          
+          <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
-        <Image style={styles.signupwithimg} source={require('../../assets/images/signupwith.png')} />
+        <Image style={styles.signupwithimg} source={require('../assets/images/signupwith.png')} />
         <View style={styles.onlinesignupcontainer}>
-          <Image style={styles.onlineicon} source={require('../../assets/images/google.png')} />
-          <Image style={styles.onlineicon} source={require('../../assets/images/facebook.png')} />
-          <Image style={styles.onlineicon} source={require('../../assets/images/apple.png')} />
+          <Image style={styles.onlineicon} source={require('../assets/images/google.png')} />
+          <Image style={styles.onlineicon} source={require('../assets/images/facebook.png')} />
+          <Image style={styles.onlineicon} source={require('../assets/images/apple.png')} />
         </View>
       </View>
     </View>
