@@ -3,37 +3,58 @@ import { ThemedText } from '@/components/ThemedText';
 import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebase';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth, provider } from './firebase'; // Import provider from your firebase config
+import * as Google from 'expo-auth-session/providers/google';
 
 export default function LoginScreen() {
   const [isChecked, setIsChecked] = useState(false);
   const navigation = useNavigation();
 
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: '<YOUR_GOOGLE_CLIENT_ID>', // Replace with your Google Client ID
+  });
 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigation.navigate('HistoryScreen');
     } catch (error) {
-      Alert.alert('Login Failed');
+      Alert.alert('Login Failed'); // Show error message
+    }
+  };
+
+  
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await promptAsync();
+      if (result?.type === 'success') {
+        const { id_token } = result.params;
+
+        const credential = GoogleAuthProvider.credential(id_token);
+        const userCredential = await signInWithCredential(auth, credential);
+        const user = userCredential.user;
+
+        console.log('Logged in with Google: ', user.email);
+        navigation.navigate('HistoryScreen');
+      }
+    } catch (error) {
+      console.error('Google Sign-In Error: ', error);
+      Alert.alert('Google Sign-In Failed', error.message);
     }
   };
 
   return (
-    // Main container for the screen
     <View style={styles.container_big}>
       <View style={styles.container}>
         <Image style={styles.image} source={require('../assets/images/signup.png')} />
         <ThemedText type="title">Welcome</ThemedText>
+        <ThemedText style={styles.subtitle} type="subtitle">Start fact-checking your work</ThemedText>
 
-        {/* Subtitle prompting the user to start fact-checking */}
-        <ThemedText style={styles.subtitle} type="subtitle">Start fact checking your work</ThemedText>
-
-        {/* Email input field */}
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle}>Email</ThemedText>
           <TextInput
@@ -41,11 +62,10 @@ export default function LoginScreen() {
             placeholderTextColor="#808089"
             placeholder="Enter your email"
             onChangeText={setEmail}
-          value={email}
+            value={email}
           />
         </View>
 
-        {/* Password input field */}
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle2}>Password</ThemedText>
           <TextInput
@@ -54,30 +74,29 @@ export default function LoginScreen() {
             secureTextEntry
             placeholder="Enter your password"
             onChangeText={setPassword}
-          value={password}
+            value={password}
           />
         </View>
 
-        {/* Checkbox for 'Remember Me' option */}
         <View style={styles.checkboxcontainer}>
           <CheckBox
-            style={styles.checkbox} // Style for the checkbox
-            value={isChecked} // Bind checkbox value to state
-            onValueChange={setIsChecked} // Update state when checkbox is checked/unchecked
+            style={styles.checkbox}
+            value={isChecked}
+            onValueChange={setIsChecked}
           />
-          {/* Checkbox label */}
           <ThemedText type="subtitle" style={styles.checkboxtext}>Remember Me</ThemedText>
         </View>
 
-        <TouchableOpacity style={styles.button}
-        
-        onPress={handleLogin}>
-          
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
+
         <Image style={styles.signupwithimg} source={require('../assets/images/signupwith.png')} />
+
         <View style={styles.onlinesignupcontainer}>
-          <Image style={styles.onlineicon} source={require('../assets/images/google.png')} />
+          <TouchableOpacity onPress={handleGoogleSignIn}>
+            <Image style={styles.onlineicon} source={require('../assets/images/google.png')} />
+          </TouchableOpacity>
           <Image style={styles.onlineicon} source={require('../assets/images/facebook.png')} />
           <Image style={styles.onlineicon} source={require('../assets/images/apple.png')} />
         </View>
