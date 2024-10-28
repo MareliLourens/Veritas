@@ -70,7 +70,8 @@ export default function LoginScreen() {
         </View>
 
         <TouchableOpacity style={styles.button}
-        onPress={() => navigation.navigate('HistoryScreen')}>
+        
+        onPress={handleLogin}>
           
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
