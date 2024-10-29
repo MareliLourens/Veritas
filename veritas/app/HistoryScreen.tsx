@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   background: {
     backgroundColor: '#FFFFFF',      // Set background color for the bottom view
-    height: 400,                      // Set height
+    height: 700,                      // Set height
     width: 500,                       // Set width
     position: 'absolute',             // Position it absolutely
     bottom: 0,                        // Align to the bottom

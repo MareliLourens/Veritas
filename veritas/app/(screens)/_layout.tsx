@@ -3,7 +3,6 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 // Import custom components and constants
-import { TabBarIcon } from '@/components/navigation/TabBarIcon'; // Custom icon component for tab bar
 import { Colors } from '@/constants/Colors'; // Color constants for the application
 import { useColorScheme } from '@/hooks/useColorScheme'; // Hook to determine the current color scheme (light or dark)
 
@@ -27,9 +26,7 @@ export default function TabLayout() {
         options={{
           title: 'Home', // Title displayed on the tab
           // Render the tab bar icon conditionally based on whether the tab is focused
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
+         
         }}
       />
       {/* Define the second tab for History */}
@@ -39,9 +36,7 @@ export default function TabLayout() {
         options={{
           title: 'History', // Title displayed on the tab 
           // Render the tab bar icon conditionally based on whether the tab is focused
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
+         
         }}
       />
     </Tabs>

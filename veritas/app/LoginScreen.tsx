@@ -21,7 +21,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigation.navigate('HistoryScreen');
+      navigation.navigate('FactCheckScreen');
     } catch (error) {
       Alert.alert('Login Failed'); // Show error message
     }
@@ -40,7 +40,7 @@ export default function LoginScreen() {
         const user = userCredential.user;
 
         console.log('Logged in with Google: ', user.email);
-        navigation.navigate('HistoryScreen');
+        navigation.navigate('FactCheckScreen');
       }
     } catch (error) {
       console.error('Google Sign-In Error: ', error);
@@ -111,8 +111,6 @@ const styles = StyleSheet.create({
     flex: 1, // Take up the full height of the screen
     justifyContent: 'flex-end', // Align content at the bottom
     backgroundColor: 'white', // Background color
-    borderTopRightRadius: 35, // Rounded top-right corners
-    borderTopLeftRadius: 35, // Rounded top-left corners
   },
   image: {
     height: 250, // Image height

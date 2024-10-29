@@ -9,6 +9,7 @@ import { auth } from './firebase';
 
 import LoginScreen from './LoginScreen';
 import HistoryScreen from './HistoryScreen';
+import FactCheckScreen from './FactCheckScreen';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -43,7 +44,7 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack.Navigator initialRouteName={loggedIn ? "HistoryScreen" : "LoginScreen"}>
+    <Stack.Navigator initialRouteName={loggedIn ? "FactCheckScreen" : "LoginScreen"}>
       <Stack.Screen
         name="LoginScreen"
         component={LoginScreen}
@@ -52,6 +53,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="HistoryScreen"
         component={HistoryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="FactCheckScreen"
+        component={FactCheckScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
