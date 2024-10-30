@@ -28,7 +28,7 @@ data.map((item: HistoryItem) => (
 ));
 
 // Define the HistoryScreen functional component
-export default function HistoryScreen() {
+export default function CheckedScreen() {
   // Function to render each item in the FlatList
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.item}>
@@ -57,13 +57,13 @@ export default function HistoryScreen() {
         renderItem={renderItem}
       />
       {/* Uncomment below to add a navigation bar at the bottom */}
-{/*       
+      {/* 
       <View style={styles.navBar}>
         <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
         <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
         <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
-      </View> */}
-     
+      </View>
+      */}
     </View>
   );
 }

@@ -5,40 +5,40 @@ import React from 'react';
 // Import custom components and constants
 import { Colors } from '@/constants/Colors'; // Color constants for the application
 import { useColorScheme } from '@/hooks/useColorScheme'; // Hook to determine the current color scheme (light or dark)
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import HistoryScreen from '../HistoryScreen';
+import FactCheckScreen from '../FactCheckScreen';
+
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 // Define the TabLayout functional component
-export default function TabLayout() {
-  // Get the current color scheme (light or dark)
-  const colorScheme = useColorScheme();
-
+export default function MainTabs() {
   return (
-    // Render the Tabs component with specific options
-    <Tabs
+    <Tab.Navigator
       screenOptions={{
-        // Set the active tint color for the tab bar based on the current color scheme
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false, // Hide the header for the tabs
-                                       tabBarStyle: { display: 'none' }, // Uncomment to hide the tab bar
-      }}>
-      {/* Define the first tab for Home */}
-      <Tabs.Screen
-        name="index" // The name of the screen, used for navigation
-        options={{
-          title: 'Home', // Title displayed on the tab
-          // Render the tab bar icon conditionally based on whether the tab is focused
-         
+        headerShown: false,
+        tabBarStyle: { backgroundColor: 'white' }, // Customize tab bar style
+      }}
+    >
+      <Tab.Screen 
+        name="History" 
+        component={HistoryScreen} 
+        options={{ 
+          tabBarLabel: 'History', // Set tab label
+          headerShown: false 
         }}
       />
-      {/* Define the second tab for History */}
-      
-      <Tabs.Screen
-        name="history" // The name of the screen for the History tab
-        options={{
-          title: 'History', // Title displayed on the tab 
-          // Render the tab bar icon conditionally based on whether the tab is focused
-         
+      <Tab.Screen 
+        name="FactCheck" 
+        component={FactCheckScreen} 
+        options={{ 
+          tabBarLabel: 'Fact Check', // Set tab label
+          headerShown: false 
         }}
       />
-    </Tabs>
+    </Tab.Navigator>
   );
 }
