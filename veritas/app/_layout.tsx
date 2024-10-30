@@ -5,40 +5,37 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth'; // Importing Firebase authentication listener
+import { auth } from './firebase'; // Importing the Firebase auth instance configured in a separate file
 import { Image } from 'react-native';
 import LoginScreen from './LoginScreen';
 import HistoryScreen from './HistoryScreen';
 import FactCheckScreen from './FactCheckScreen';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from '@/hooks/useColorScheme'; // Custom hook for managing color scheme
 import CheckedScreen from './CheckedScreen';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync(); // Preventing the splash screen from hiding until we're ready
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator(); // Creating a stack navigator for screen transitions
+const Tab = createBottomTabNavigator(); // Creating a bottom tab navigator for main tabs
 
-// MainTabs component for bottom tab navigation
 function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#F5F8FA', // Set your desired background color
-          height: 60, // Customize height
+          backgroundColor: '#F5F8FA',
+          height: 60,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
         },
         tabBarLabelStyle: {
-          fontSize: 14, // Customize label font size
-          fontWeight: 'bold', // Customize label font weight
+          fontSize: 14,
+          fontWeight: 'bold',
         },
-        tabBarActiveTintColor: '#fff', // Color for active tab
-        tabBarInactiveTintColor: '#b0b0b0', // Color for inactive tabs
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#b0b0b0',
       }}
     >
       <Tab.Screen
@@ -50,9 +47,9 @@ function MainTabs() {
             <Image
               source={color === '#fff' ? require('../assets/images/home_active.png') : require('../assets/images/home_inactive.png')}
               style={{
-                width: color === '#fff' ? 70 : 30, // Set width based on active state
-                height: color === '#fff' ? 70 : 30, // Set height based on active state
-                marginTop: color === '#fff' ? -30 : 20, // Set margin based on active state
+                width: color === '#fff' ? 70 : 30,
+                height: color === '#fff' ? 70 : 30,
+                marginTop: color === '#fff' ? -30 : 20,
               }}
             />
           ),
@@ -67,9 +64,9 @@ function MainTabs() {
             <Image
               source={color === '#fff' ? require('../assets/images/checked_active.png') : require('../assets/images/checked_inactive.png')}
               style={{
-                width: color === '#fff' ? 70 : 30, // Set width based on active state
-                height: color === '#fff' ? 70 : 30, // Set height based on active state
-                marginTop: color === '#fff' ? -30 : 20, // Set margin based on active state
+                width: color === '#fff' ? 70 : 30,
+                height: color === '#fff' ? 70 : 30,
+                marginTop: color === '#fff' ? -30 : 20,
               }}
             />
           ),
@@ -84,9 +81,9 @@ function MainTabs() {
             <Image
               source={color === '#fff' ? require('../assets/images/history_active.png') : require('../assets/images/history_inactive.png')}
               style={{
-                width: color === '#fff' ? 70 : 30, // Set width based on active state
-                height: color === '#fff' ? 70 : 30, // Set height based on active state
-                marginTop: color === '#fff' ? -30 : 20, // Set margin based on active state
+                width: color === '#fff' ? 70 : 30,
+                height: color === '#fff' ? 70 : 30,
+                marginTop: color === '#fff' ? -30 : 20,
               }}
             />
           ),
@@ -96,54 +93,48 @@ function MainTabs() {
   );
 }
 
-
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     FuturaPTBook: require('../assets/fonts/FuturaPTBook.otf'),
   });
 
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false); // State to track user authentication status
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync(); // Hiding splash screen after fonts are loaded
     }
   }, [loaded]);
 
   useEffect(() => {
+    // Firebase auth state listener to track user login/logout
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setLoggedIn(!!user);
+      setLoggedIn(!!user); // Updating loggedIn state based on user authentication status
     });
-    return unsubscribe;
+    return unsubscribe; // Cleanup function to unsubscribe from listener on component unmount
   }, []);
 
   if (!loaded) {
-    return null; // Show nothing until fonts are loaded
+    return null; // Prevent rendering until fonts are loaded
   }
 
   return (
-
     <Stack.Navigator initialRouteName={loggedIn ? "MainTabs" : "LoginScreen"}>
-      {/* Login Screen Route */}
+      {/* Navigating to MainTabs if the user is logged in; otherwise, show LoginScreen */}
       <Stack.Screen
         name="LoginScreen"
         component={LoginScreen}
         options={{ headerShown: false }}
       />
-
-      {/* Main Tab Navigator Route */}
       <Stack.Screen
         name="MainTabs"
         component={MainTabs}
         options={{ headerShown: false }}
       />
-
-      {/* Direct Access Route to FactCheckScreen */}
       <Stack.Screen
         name="FactCheckScreen"
-        component={MainTabs}
+        component={MainTabs} // This screen is integrated within the MainTabs component
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

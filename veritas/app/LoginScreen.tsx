@@ -4,45 +4,58 @@ import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth, provider } from './firebase'; // Import provider from your firebase config
+import { auth, provider } from './firebase';
 import * as Google from 'expo-auth-session/providers/google';
 
 export default function LoginScreen() {
+  // State to track checkbox for "Remember Me" functionality
   const [isChecked, setIsChecked] = useState(false);
+  // Navigation object to switch screens
   const navigation = useNavigation();
-
+  // State variables to store email and password input values
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Set up Google sign-in request with the client ID
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '<YOUR_GOOGLE_CLIENT_ID>', // Replace with your Google Client ID
+    clientId: '<YOUR_GOOGLE_CLIENT_ID>',
   });
 
+  // Function to handle login with email and password
   const handleLogin = async () => {
     try {
+      // Sign in using Firebase authentication
       await signInWithEmailAndPassword(auth, email, password);
+      // Navigate to the FactCheckScreen upon successful login
       navigation.navigate('FactCheckScreen');
     } catch (error) {
-      Alert.alert('Login Failed'); // Show error message
+      // Alert the user if login fails
+      Alert.alert('Login Failed');
     }
   };
 
-  
-
+  // Function to handle Google Sign-In
   const handleGoogleSignIn = async () => {
     try {
+      // Prompt the user for Google sign-in and get the result
       const result = await promptAsync();
+      // Check if the sign-in was successful
       if (result?.type === 'success') {
+        // Extract the id_token from the result parameters
         const { id_token } = result.params;
-
+        // Create a credential with the id_token for Firebase authentication
         const credential = GoogleAuthProvider.credential(id_token);
+        // Sign in with the credential in Firebase
         const userCredential = await signInWithCredential(auth, credential);
+        // Get the logged-in user's information
         const user = userCredential.user;
-
+        // Log the user's email to the console
         console.log('Logged in with Google: ', user.email);
+        // Navigate to the FactCheckScreen upon successful login
         navigation.navigate('FactCheckScreen');
       }
     } catch (error) {
+      // Log and alert the user if Google sign-in fails
       console.error('Google Sign-In Error: ', error);
       Alert.alert('Google Sign-In Failed', error.message);
     }
@@ -54,7 +67,6 @@ export default function LoginScreen() {
         <Image style={styles.image} source={require('../assets/images/signup.png')} />
         <ThemedText type="title">Welcome</ThemedText>
         <ThemedText style={styles.subtitle} type="subtitle">Start fact-checking your work</ThemedText>
-
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle}>Email</ThemedText>
           <TextInput
@@ -65,7 +77,6 @@ export default function LoginScreen() {
             value={email}
           />
         </View>
-
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle2}>Password</ThemedText>
           <TextInput
@@ -77,7 +88,6 @@ export default function LoginScreen() {
             value={password}
           />
         </View>
-
         <View style={styles.checkboxcontainer}>
           <CheckBox
             style={styles.checkbox}
@@ -86,13 +96,10 @@ export default function LoginScreen() {
           />
           <ThemedText type="subtitle" style={styles.checkboxtext}>Remember Me</ThemedText>
         </View>
-
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
-
         <Image style={styles.signupwithimg} source={require('../assets/images/signupwith.png')} />
-
         <View style={styles.onlinesignupcontainer}>
           <TouchableOpacity onPress={handleGoogleSignIn}>
             <Image style={styles.onlineicon} source={require('../assets/images/google.png')} />
@@ -105,105 +112,104 @@ export default function LoginScreen() {
   );
 }
 
-// Styles for the components using StyleSheet
 const styles = StyleSheet.create({
   container_big: {
-    flex: 1, // Take up the full height of the screen
-    justifyContent: 'flex-end', // Align content at the bottom
-    backgroundColor: 'white', // Background color
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'white',
   },
   image: {
-    height: 250, // Image height
-    width: 250, // Image width
-    alignItems: 'center', // Center items in the image container
+    height: 250,
+    width: 250,
+    alignItems: 'center',
   },
   container: {
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
-    padding: 20, // Padding around the container
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   subtitle: {
-    color: '#808089', // Subtitle text color
-    marginTop: 10, // Top margin
-    marginBottom: 20, // Bottom margin
+    color: '#808089',
+    marginTop: 10,
+    marginBottom: 20,
   },
   inputcontainer: {
-    width: '100%', // Full width
-    height: 60, // Fixed height
-    marginBottom: 20, // Space below the input
+    width: '100%',
+    height: 60,
+    marginBottom: 20,
   },
   inputtitle: {
-    color: "#000000", // Input title text color
-    height: 25, // Fixed height for the title
-    width: "17%", // Fixed width for the title
-    position: 'absolute', // Position the title absolutely
-    marginLeft: 30, // Space from the left
-    paddingLeft: 8, // Space within the title container
-    backgroundColor: "#FFFFFF", // Background color for the title
-    zIndex: 1, // Ensure the title appears above the input
+    color: "#000000",
+    height: 25,
+    width: "17%",
+    position: 'absolute',
+    marginLeft: 30,
+    paddingLeft: 8,
+    backgroundColor: "#FFFFFF",
+    zIndex: 1,
   },
   inputtitle2: {
-    color: "#000000", // Input title text color for password
-    height: 25, // Fixed height for the title
-    width: "28%", // Fixed width for the title
-    position: 'absolute', // Position the title absolutely
-    marginLeft: 30, // Space from the left
-    paddingLeft: 8, // Space within the title container
-    backgroundColor: "#FFFFFF", // Background color for the title
-    zIndex: 1, // Ensure the title appears above the input
+    color: "#000000",
+    height: 25,
+    width: "28%",
+    position: 'absolute',
+    marginLeft: 30,
+    paddingLeft: 8,
+    backgroundColor: "#FFFFFF",
+    zIndex: 1,
   },
   input: {
-    width: '100%', // Full width for input field
-    height: 50, // Fixed height for input field
-    borderWidth: 1, // Border width
-    borderColor: '#0FA5EF', // Border color
-    borderRadius: 15, // Rounded corners
-    marginBottom: 20, // Space below the input
-    marginTop: 10, // Space above the input
-    fontSize: 16, // Font size
-    paddingLeft: 20, // Left padding for input text
-    fontFamily: 'MontserratReg', // Font family for input text
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#0FA5EF',
+    borderRadius: 15,
+    marginBottom: 20,
+    marginTop: 10,
+    fontSize: 16,
+    paddingLeft: 20,
+    fontFamily: 'MontserratReg',
   },
   checkboxcontainer: {
-    width: 160, // Fixed width for the checkbox container
-    display: 'flex', // Flex display
-    flexDirection: 'row', // Align items in a row
-    marginLeft: -150, // Adjust left margin for alignment
+    width: 160,
+    display: 'flex',
+    flexDirection: 'row',
+    marginLeft: -150,
   },
   checkbox: {
-    marginRight: 5, // Space to the right of the checkbox
+    marginRight: 5,
   },
   checkboxtext: {
-    color: "#808089" // Checkbox label text color
+    color: "#808089"
   },
   button: {
-    width: '100%', // Full width for the button
-    height: 58, // Fixed height for the button
-    backgroundColor: '#0FA5EF', // Button background color
-    justifyContent: 'center', // Center button text vertically
-    alignItems: 'center', // Center button text horizontally
-    borderRadius: 15, // Rounded corners
-    marginTop: 20, // Space above the button
+    width: '100%',
+    height: 58,
+    backgroundColor: '#0FA5EF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 15,
+    marginTop: 20,
   },
   buttonText: {
-    color: '#fff', // Button text color
-    fontSize: 20, // Font size for button text
-    fontWeight: 'bold', // Bold font weight
-    fontFamily: 'FuturaPTBold', // Font family for button text
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontFamily: 'FuturaPTBold',
   },
   signupwithimg: {
-    width: '100%', // Full width for the sign-up image
-    marginTop: 10, // Space above the sign-up image
-    marginBottom: 10, // Space below the sign-up image
-    objectFit: 'contain', // Maintain aspect ratio of the image
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
+    objectFit: 'contain',
   },
   onlinesignupcontainer: {
-    width: '100%', // Full width for the social media icons container
-    display: 'flex', // Flex display
-    flexDirection: 'row', // Align icons in a row
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
   },
   onlineicon: {
-    objectFit: 'contain', // Maintain aspect ratio of the icons
-    height: 50, // Fixed height for icons
+    objectFit: 'contain',
+    height: 50,
   },
 });

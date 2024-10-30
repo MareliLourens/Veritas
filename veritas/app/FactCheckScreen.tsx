@@ -78,13 +78,13 @@ export default function FactCheckScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,                       
-        backgroundColor: '#B7E4FA',    
+        flex: 1,
+        backgroundColor: '#B7E4FA',
         padding: 20,
     },
     background: {
-        backgroundColor: '#FFFFFF',      
-        height: 700,                     
+        backgroundColor: '#FFFFFF',
+        height: 700,
         width: 500,
         position: 'absolute',
         bottom: 0,
