@@ -1,147 +1,329 @@
-// Import necessary components and libraries from React Native
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import React from 'react';
-import { ThemedText } from '@/components/ThemedText';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-// Define the structure of each history item using TypeScript interface
-interface HistoryItem {
-  id: number;         // Unique identifier for the history item
-  title: string;      // Title of the history item
-  date: string;       // Date associated with the history item
-  percentage: number; // Percentage related to the history item
+export default function FactCheckScreen() {
+    return (
+        <SafeAreaProvider>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#B7E4FA" }}>
+                <ScrollView>
+                    <View style={styles.container}>
+                        <View style={styles.background}></View>
+
+
+                        <View style={styles.uploadSection}>
+                            <View style={styles.documentCard}>
+                                <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
+                                <View>
+                                    <Text style={styles.documentTitle}>Lions are mammals</Text>
+                                    <Text style={styles.documentDate}>20 June 2024</Text>
+                                </View>
+                            </View>
+                            <Text style={styles.uploadPrompt}>Tap to upload more documents...</Text>
+
+                        </View>
+                        <View style={styles.progressBar}>
+                            <View style={styles.progress}></View>
+                        </View>
+                        <Text style={styles.processingText}>Processing</Text>
+                        <View style={styles.accuracySection}>
+                            <Text style={styles.accuracyLabel}>Accuracy</Text>
+                            <Text style={styles.accuracyPercentage}>100%</Text>
+                        </View>
+
+                        <View style={styles.supportingArticles}>
+                            <Text style={styles.articlesLabel}>Supporting articles</Text>
+                            <View style={styles.articleCard}>
+                                <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
+                                <View>
+                                    <Text style={styles.articleTitle}>Lions: Kings of the jungle</Text>
+                                    <Text style={styles.articleSource}>Website name</Text>
+                                </View>
+                            </View>
+                        </View>
+
+
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </SafeAreaProvider>
+    );
 }
 
-// Sample data for the history items
-const data: HistoryItem[] = [
-  { id: 1, title: 'Lions are mammals', date: '20 June 2024', percentage: 100 },
-  { id: 2, title: 'Capitec debt', date: '20 June 2024', percentage: 75 },
-  { id: 3, title: 'Document Name', date: 'Date', percentage: 0 }
-];
-
-// Map through data (this is unused and can be removed)
-data.map((item: HistoryItem) => (
-  <View key={item.title}>
-    <Text>{item.title}</Text>
-    <Text>{item.date}</Text>
-    <Text>{item.percentage}%</Text>
-  </View>
-));
-
-// Define the HistoryScreen functional component
-export default function CheckedScreen() {
-  // Function to render each item in the FlatList
-  const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.item}>
-      <View style={styles.leftSection}>
-        <Image style={styles.icon} source={require('../assets/images/icon.png')} />
-        <View style={styles.textSection}>
-          {/* Display the title and date of the item */}
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.date}>{item.date}</Text>
-        </View>
-      </View>
-      {/* Display the percentage for the item */}
-      <Text style={styles.percentage}>{item.percentage}%</Text>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      {/* Background view at the bottom of the screen */}
-      <View style={styles.background}></View>
-      {/* Header text for the history screen */}
-      <ThemedText type="title" style={styles.header}>History</ThemedText>
-      {/* FlatList component to render the list of history items */}
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-      />
-      {/* Uncomment below to add a navigation bar at the bottom */}
-      {/* 
-      <View style={styles.navBar}>
-        <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
-        <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
-        <Image style={styles.navIcon} source={require('../../assets/images/home.png')} />
-      </View>
-      */}
-    </View>
-  );
-}
-
-// Define styles for the component using StyleSheet
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,                         // Make the container fill the entire screen
-    backgroundColor: '#B7E4FA',     // Set background color
-    paddingTop: 35,                  // Add top padding
-    paddingHorizontal: 20,           // Add horizontal padding
-  },
-  background: {
-    backgroundColor: '#FFFFFF',      // Set background color for the bottom view
-    height: 700,                      // Set height
-    width: 500,                       // Set width
-    position: 'absolute',             // Position it absolutely
-    bottom: 0,                        // Align to the bottom
-  },
-  header: {
-    fontSize: 20,                    // Set font size for the header
-    marginBottom: 20,                // Add bottom margin
-    color: '#000',                   // Set text color
-  },
-  item: {
-    flexDirection: 'row',            // Align items in a row
-    justifyContent: 'space-between',  // Space items evenly
-    alignItems: 'center',            // Center align items vertically
-    backgroundColor: '#F5F8FA',      // Set background color for each item
-    borderRadius: 10,                 // Round the corners
-    padding: 15,                     // Add padding
-    marginBottom: 15,                // Add bottom margin
-    height: 96,                      // Set height for each item
-  },
-  leftSection: {
-    flexDirection: 'row',            // Align icon and text in a row
-    alignItems: 'center',            // Center align vertically
-  },
-  icon: {
-    width: 37,                       // Set width for the icon
-    height: 51,                      // Set height for the icon
-    marginRight: 15,                 // Add right margin
-    objectFit: 'contain',            // Maintain aspect ratio
-  },
-  textSection: {
-    justifyContent: 'center',        // Center the text vertically
-  },
-  title: {
-    fontSize: 17,                   // Set font size for the title
-    fontWeight: 'bold',              // Make the title bold
-    color: '#000',                   // Set title color
-    marginBottom: 2                  // Add bottom margin
-  },
-  date: {
-    fontSize: 16,                   // Set font size for the date
-    color: '#7D7D7D',                // Set date color
-    fontFamily: 'MontserratReg',     // Set font family
-  },
-  percentage: {
-    fontSize: 32,                   // Set font size for the percentage
-    fontWeight: 'bold',              // Make the percentage bold
-    color: '#000',                   // Set percentage color
-  },
-  navBar: {
-    flexDirection: 'row',            // Align navigation icons in a row
-    justifyContent: 'space-between',  // Space icons evenly
-    paddingHorizontal: 40,           // Add horizontal padding
-    paddingVertical: 15,             // Add vertical padding
-    backgroundColor: '#FFFFFF',      // Set background color for the nav bar
-    borderTopLeftRadius: 30,         // Round top left corner
-    borderTopRightRadius: 30,        // Round top right corner
-    position: 'absolute',             // Position absolutely
-    bottom: 0,                        // Align to the bottom
-    width: '100%',                   // Set width to 100%
-    elevation: 10,                   // Add elevation for shadow effect
-  },
-  navIcon: {
-    width: 30,                       // Set width for the navigation icon
-    height: 30,                      // Set height for the navigation icon
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#B7E4FA',
+        padding: 20,
+    },
+    background: {
+        backgroundColor: '#FFFFFF',
+        height: 700,
+        width: 500,
+        position: 'absolute',
+        bottom: 0,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    profileimage: {
+        width: 62,
+        height: 62,
+        borderRadius: 25,
+        marginRight: 10,
+    },
+    greetingText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+    },
+    prompttext: {
+        fontSize: 16,
+        color: '#808089',
+        width: '90%',
+        fontFamily: 'MontserratReg',
+    },
+    uploadSection: {
+        backgroundColor: '#F5F8FA',
+        borderRadius: 15,
+        height: 436,
+        alignItems: 'center',
+        padding: 20,
+    },
+    touchbutton: {
+        height: 340,
+        width: '100%',
+        backgroundColor: '#B7E4FA',
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    uploadicon: {
+        width: 121,
+        height: 159,
+        marginBottom: 30,
+    },
+    uploadText: {
+        color: '#808089',
+        fontSize: 16,
+        fontFamily: 'MontserratReg',
+    },
+    factCheckButton: {
+        backgroundColor: '#0FA5EF',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        width: '100%',
+        height: 43,
+        marginTop: 18,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    factCheckButtonText: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        fontFamily: 'FuturaPTBold',
+    },
+    urlSection: {
+        marginBottom: 20,
+        width: '100%',
+    },
+    urlLabel: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+        marginTop: 17,
+        marginBottom: 17,
+    },
+    urlInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#0FA5EF',
+        borderWidth: 1,
+        borderRadius: 15,
+        paddingHorizontal: 10,
+        height: 50,
+        backgroundColor: '#FFFFFF',
+    },
+    urlInput: {
+        flex: 1,
+        color: '#333',
+        paddingHorizontal: 10,
+    },
+    factCheckUrlButton: {
+        backgroundColor: '#0FA5EF',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 10,
+        marginLeft: 5,
+    },
+    factCheckButtonText2: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    historySection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    historyLabel: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+        marginBottom: 17,
+    },
+    viewAllText: {
+        color: '#0FA5EF',
+        fontSize: 14,
+    },
+    item: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#F5F8FA',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 15,
+        height: 96,
+    },
+    leftSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    icon: {
+        width: 37,
+        height: 51,
+        marginRight: 15,
+        objectFit: 'contain',
+    },
+    textSection: {
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#000',
+        marginBottom: 2
+    },
+    date: {
+        fontSize: 16,
+        color: '#808089',
+        fontFamily: 'MontserratReg',
+    },
+    percentage: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#000',
+    },
+    documentCard: {
+        height: 86,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#CBE9F8',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 10,
+    },
+    documentIcon: {
+        width: 33,
+        height: 46,
+        marginRight: 10,
+    },
+    documentTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+    },
+    documentDate: {
+        fontSize: 14,
+        color: '#808089',
+        fontFamily: 'MontserratReg',
+    },
+    uploadPrompt: {
+        fontSize: 16,
+        color: '#808089',
+        textAlign: 'center',
+        marginVertical: 10,
+        position: 'absolute',
+        fontFamily: 'MontserratReg',
+        bottom: 5,
+    },
+    progressBar: {
+        height: 15,
+        width: '100%',
+        backgroundColor: '#CBE9F8',
+        borderRadius: 15,
+        overflow: 'hidden',
+        marginTop: 20,
+    },
+    progress: {
+        width: '50%',
+        height: '100%',
+        backgroundColor: '#0FA5EF',
+    },
+    processingText: {
+        fontSize: 16,
+        color: '#808089',
+        textAlign: 'center',
+        marginVertical: 10,
+    },
+    accuracySection: {
+        marginBottom: 20,
+    },
+    accuracyLabel: {
+        fontSize: 20,
+        fontFamily: 'FuturaPTBold',
+        color: '#001A23',
+        fontWeight: 'bold',
+    },
+    accuracyPercentage: {
+        fontSize: 32,
+        fontFamily: 'FuturaPTBold',
+        fontWeight: 'bold',
+        color: '#001A23',
+    },
+    supportingArticles: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+    },
+    articlesLabel: {
+        fontSize: 20,
+        fontFamily: 'FuturaPTBold',
+        color: '#001A23',
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    articleCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F5F8FA',
+        borderRadius: 15,
+        padding: 15,
+        height: 96,
+    },
+    articleIcon: {
+        width: 53,
+        height: 53,
+        marginRight: 10,
+    },
+    articleTitle: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+    },
+    articleSource: {
+        fontSize: 16,
+        color: '#808089',
+        fontFamily: 'MontserratReg',
+    },
+
 });

@@ -51,24 +51,20 @@ export default function FactCheckScreen() {
                             <View style={styles.leftSection}>
                                 <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
                                 <View style={styles.textSection}>
-                                    {/* Display the title and date of the item */}
                                     <Text style={styles.title}>Lions are mammals</Text>
                                     <Text style={styles.date}>20 June 2024</Text>
                                 </View>
                             </View>
-                            {/* Display the percentage for the item */}
                             <Text style={styles.percentage}>100%</Text>
                         </View>
                         <View style={styles.item}>
                             <View style={styles.leftSection}>
                                 <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
                                 <View style={styles.textSection}>
-                                    {/* Display the title and date of the item */}
                                     <Text style={styles.title}>Capitec debt</Text>
                                     <Text style={styles.date}>20 June 2024</Text>
                                 </View>
                             </View>
-                            {/* Display the percentage for the item */}
                             <Text style={styles.percentage}>75%</Text>
                         </View>
 
@@ -82,16 +78,16 @@ export default function FactCheckScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,                         // Make the container fill the entire screen
-        backgroundColor: '#B7E4FA',     // Set background color
+        flex: 1,                       
+        backgroundColor: '#B7E4FA',    
         padding: 20,
     },
     background: {
-        backgroundColor: '#FFFFFF',      // Set background color for the bottom view
-        height: 700,                      // Set height
-        width: 500,                       // Set width
-        position: 'absolute',             // Position it absolutely
-        bottom: 0,                        // Align to the bottom
+        backgroundColor: '#FFFFFF',      
+        height: 700,                     
+        width: 500,
+        position: 'absolute',
+        bottom: 0,
     },
     header: {
         flexDirection: 'row',
@@ -213,42 +209,42 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     item: {
-        flexDirection: 'row',            // Align items in a row
-        justifyContent: 'space-between',  // Space items evenly
-        alignItems: 'center',            // Center align items vertically
-        backgroundColor: '#F5F8FA',      // Set background color for each item
-        borderRadius: 10,                 // Round the corners
-        padding: 15,                     // Add padding
-        marginBottom: 15,                // Add bottom margin
-        height: 96,                      // Set height for each item
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#F5F8FA',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 15,
+        height: 96,
     },
     leftSection: {
-        flexDirection: 'row',            // Align icon and text in a row
-        alignItems: 'center',            // Center align vertically
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     icon: {
-        width: 37,                       // Set width for the icon
-        height: 51,                      // Set height for the icon
-        marginRight: 15,                 // Add right margin
-        objectFit: 'contain',            // Maintain aspect ratio
+        width: 37,
+        height: 51,
+        marginRight: 15,
+        objectFit: 'contain',
     },
     textSection: {
-        justifyContent: 'center',        // Center the text vertically
+        justifyContent: 'center',
     },
     title: {
-        fontSize: 17,                   // Set font size for the title
-        fontWeight: 'bold',              // Make the title bold
-        color: '#000',                   // Set title color
-        marginBottom: 2                  // Add bottom margin
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#000',
+        marginBottom: 2
     },
     date: {
-        fontSize: 16,                   // Set font size for the date
-        color: '#7D7D7D',                // Set date color
-        fontFamily: 'MontserratReg',     // Set font family
+        fontSize: 16,
+        color: '#808089',
+        fontFamily: 'MontserratReg',
     },
     percentage: {
-        fontSize: 32,                   // Set font size for the percentage
-        fontWeight: 'bold',              // Make the percentage bold
-        color: '#000',                   // Set percentage color
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#000',
     },
 });
