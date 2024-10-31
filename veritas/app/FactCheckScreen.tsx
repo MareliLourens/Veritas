@@ -247,4 +247,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
     },
+    progressText: {
+        fontSize: 16,
+        color: '#0FA5EF',
+        marginTop: 10,
+    },
 });
