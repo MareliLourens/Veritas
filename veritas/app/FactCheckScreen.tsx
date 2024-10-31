@@ -1,8 +1,43 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import DocumentPicker from 'react-native-document-picker'; // Ensure this library is installed
+import { uploadAndSaveDocument } from '../app/services/BucketService'; // Adjust the import path
+
 
 export default function FactCheckScreen() {
+
+    // const handleDocumentUpload = async () => {
+    //     try {
+    //         // Pick the PDF document
+    //         const result = await DocumentPicker.pick({
+    //             type: [DocumentPicker.types.pdf],
+    //         });
+    
+    //         // Access the first document in case multiple were returned
+    //         const document = result[0];
+    
+    //         if (document) {
+    //             const uri = document.uri;
+    //             const fileName = document.name;
+    //             const collectionName = 'yourCollectionName';
+    //             const docData = {
+    //                 // Add any additional data you want to store with the file URL
+    //             };
+    
+    //             // Upload and save the document URL in Firestore
+    //             await uploadAndSaveDocument(uri, fileName, collectionName, docData);
+    //         }
+    //     } catch (error) {
+    //         if (DocumentPicker.isCancel(error)) {
+    //             console.log("User cancelled the picker");
+    //         } else {
+    //             console.error("Error picking or uploading document: ", error);
+    //         }
+    //     }
+    // };
+
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1, backgroundColor: "#B7E4FA" }}>
@@ -19,7 +54,7 @@ export default function FactCheckScreen() {
 
 
                         <View style={styles.uploadSection}>
-                            <TouchableOpacity style={styles.touchbutton}>
+                            <TouchableOpacity style={styles.touchbutton} >
                                 <Image style={styles.uploadicon} source={require('../assets/images/upload_icon.png')} />
                                 <Text style={styles.uploadText}>Tap to upload .pdf file</Text>
                             </TouchableOpacity>
