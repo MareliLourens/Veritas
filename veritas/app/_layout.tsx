@@ -16,6 +16,10 @@ import CheckedScreen from './CheckedScreen';
 
 SplashScreen.preventAutoHideAsync(); // Preventing the splash screen from hiding until we're ready
 
+// const documentRoutes = require('./FactCheckScreen');
+// app.use('/api/documents', documentRoutes);
+
+
 const Stack = createNativeStackNavigator(); // Creating a stack navigator for screen transitions
 const Tab = createBottomTabNavigator(); // Creating a bottom tab navigator for main tabs
 
