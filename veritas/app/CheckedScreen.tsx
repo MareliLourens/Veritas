@@ -3,7 +3,7 @@ import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FactCheckScreen({ route }) {
-    const { pdfUrl, documentName } = route.params || {}; // Destructure pdfUrl and documentName from route parameters
+    const { pdfUrl, documentName, pdfText } = route.params || {}; // Destructure pdfUrl and documentName from route parameters
 
     return (
         <SafeAreaProvider>
@@ -47,6 +47,15 @@ export default function FactCheckScreen({ route }) {
                             </View>
                         </View>
                     </View>
+                    {pdfUrl && (
+                                <View >
+                                    <Text style={styles.header}>Document: {documentName}</Text>
+                                    <Text >Extracted Text:</Text>
+                                    <View >
+                                        <Text >{pdfText}</Text>
+                                    </View>
+                                </View>
+                            )}
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>

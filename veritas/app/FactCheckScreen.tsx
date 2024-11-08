@@ -4,7 +4,7 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '../app/firebase';
 import { useNavigation } from '@react-navigation/native';
-import 'whatwg-streams';  // Polyfill for ReadableStream
+// import 'whatwg-streams';  // Polyfill for ReadableStream
 import 'promise.allsettled'; 
 import * as pdfjs from 'pdfjs-dist/es5/build/pdf';
 import { Platform } from 'react-native';
@@ -71,7 +71,7 @@ export default function FactCheckScreen() {
 
     const handleNavigateToCheckedScreen = () => {
         if (pdfUrl && documentName) {
-            navigation.navigate('Checked', { pdfUrl, documentName });
+            navigation.navigate('Checked', { pdfUrl, documentName, pdfText });
         }
     };
 
