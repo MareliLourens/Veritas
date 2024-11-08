@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-export default function FactCheckScreen() {
+export default function FactCheckScreen({ route }) {
+    const { pdfUrl, documentName } = route.params || {}; // Destructure pdfUrl and documentName from route parameters
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1, backgroundColor: "#B7E4FA" }}>
@@ -10,22 +12,25 @@ export default function FactCheckScreen() {
                     <View style={styles.container}>
                         <View style={styles.background}></View>
 
-
                         <View style={styles.uploadSection}>
-                            <View style={styles.documentCard}>
-                                <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
-                                <View>
-                                    <Text style={styles.documentTitle}>Lions are mammals</Text>
-                                    <Text style={styles.documentDate}>20 June 2024</Text>
+                            {/* Conditionally render the document information if pdfUrl is defined */}
+                            {pdfUrl && (
+                                <View style={styles.documentCard}>
+                                    <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
+                                    <View>
+                                        <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
+                                        <Text style={styles.documentDate}>20 June 2024</Text>
+                                    </View>
                                 </View>
-                            </View>
+                            )}
                             <Text style={styles.uploadPrompt}>Tap to upload more documents...</Text>
-
                         </View>
+
                         <View style={styles.progressBar}>
                             <View style={styles.progress}></View>
                         </View>
                         <Text style={styles.processingText}>Processing</Text>
+
                         <View style={styles.accuracySection}>
                             <Text style={styles.accuracyLabel}>Accuracy</Text>
                             <Text style={styles.accuracyPercentage}>100%</Text>
@@ -41,14 +46,13 @@ export default function FactCheckScreen() {
                                 </View>
                             </View>
                         </View>
-
-
                     </View>
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

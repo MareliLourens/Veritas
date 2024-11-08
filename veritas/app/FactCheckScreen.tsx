@@ -1,42 +1,37 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import DocumentPicker from 'react-native-document-picker'; // Ensure this library is installed
-import { uploadAndSaveDocument } from '../app/services/BucketService'; // Adjust the import path
-
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from '../app/firebase'; // Adjust the import path to where you initialize Firebase
+import { useNavigation } from '@react-navigation/native';
 
 export default function FactCheckScreen() {
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const [documentName, setDocumentName] = useState<string | null>(null);
 
-    // const handleDocumentUpload = async () => {
-    //     try {
-    //         // Pick the PDF document
-    //         const result = await DocumentPicker.pick({
-    //             type: [DocumentPicker.types.pdf],
-    //         });
-    
-    //         // Access the first document in case multiple were returned
-    //         const document = result[0];
-    
-    //         if (document) {
-    //             const uri = document.uri;
-    //             const fileName = document.name;
-    //             const collectionName = 'yourCollectionName';
-    //             const docData = {
-    //                 // Add any additional data you want to store with the file URL
-    //             };
-    
-    //             // Upload and save the document URL in Firestore
-    //             await uploadAndSaveDocument(uri, fileName, collectionName, docData);
-    //         }
-    //     } catch (error) {
-    //         if (DocumentPicker.isCancel(error)) {
-    //             console.log("User cancelled the picker");
-    //         } else {
-    //             console.error("Error picking or uploading document: ", error);
-    //         }
-    //     }
-    // };
+    const handleDocumentLoad = async () => {
+        setLoading(true);
+        try {
+            const pdfRef = ref(storage, 'sample.pdf'); // Reference to the PDF file in Firebase Storage
+            const url = await getDownloadURL(pdfRef); // Fetch the download URL for the PDF
 
+            setPdfUrl(url); // Save the URL to state for rendering
+            setDocumentName('sample.pdf'); // Here, you can dynamically set the document name if you retrieve it from metadata
+            console.log("PDF URL:", url); // Log the URL for debugging
+        } catch (error) {
+            console.error("Error loading document:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleNavigateToCheckedScreen = () => {
+        if (pdfUrl && documentName) {
+            navigation.navigate('Checked', { pdfUrl, documentName });
+        }
+    };
 
     return (
         <SafeAreaProvider>
@@ -52,13 +47,23 @@ export default function FactCheckScreen() {
                             </View>
                         </View>
 
-
                         <View style={styles.uploadSection}>
-                            <TouchableOpacity style={styles.touchbutton} >
+                            <TouchableOpacity style={styles.touchbutton} onPress={handleDocumentLoad} disabled={loading}>
                                 <Image style={styles.uploadicon} source={require('../assets/images/upload_icon.png')} />
                                 <Text style={styles.uploadText}>Tap to upload .pdf file</Text>
+                                {pdfUrl && (
+                                <View style={styles.documentCard}>
+                                    <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
+                                    <View>
+                                    <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
+                                        <Text style={styles.documentDate}>20 June 2024</Text>
+                                    </View>
+                                </View>
+                            )}
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.factCheckButton}>
+                            {loading && <ActivityIndicator size="large" color="#0FA5EF" style={styles.loadingIndicator} />}
+                            
+                            <TouchableOpacity style={styles.factCheckButton} onPress={handleNavigateToCheckedScreen}>
                                 <Text style={styles.factCheckButtonText}>Fact Check</Text>
                             </TouchableOpacity>
                         </View>
@@ -102,8 +107,6 @@ export default function FactCheckScreen() {
                             </View>
                             <Text style={styles.percentage}>75%</Text>
                         </View>
-
-
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -269,22 +272,46 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 17,
         fontWeight: 'bold',
-        color: '#000',
-        marginBottom: 2
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
     },
     date: {
-        fontSize: 16,
+        fontSize: 13,
         color: '#808089',
         fontFamily: 'MontserratReg',
     },
     percentage: {
-        fontSize: 32,
+        fontSize: 17,
         fontWeight: 'bold',
-        color: '#000',
-    },
-    progressText: {
-        fontSize: 16,
         color: '#0FA5EF',
-        marginTop: 10,
+    },
+    loadingIndicator: {
+        marginTop: 15,
+    },
+    documentCard: {
+        height: 86,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#CBE9F8',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 10,
+    },
+    documentIcon: {
+        width: 33,
+        height: 46,
+        marginRight: 10,
+    },
+    documentTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+    },
+    documentDate: {
+        fontSize: 14,
+        color: '#808089',
+        fontFamily: 'MontserratReg',
     },
 });
