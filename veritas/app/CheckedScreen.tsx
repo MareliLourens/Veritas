@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Animated } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Animated, TextInput } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { analyzeTextAccuracy, fetchSupportingArticles } from '../app/services/api';
+import axios from 'axios';
 
 export default function FactCheckScreen({ route }) {
     const { pdfUrl, pdfText, documentName } = route.params || {};
     const [accuracyScore, setAccuracyScore] = useState(null);
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [entityVerificationResults, setEntityVerificationResults] = useState([]);
+    const [searchResults, setSearchResults] = useState({});
     const progressAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -28,7 +29,6 @@ export default function FactCheckScreen({ route }) {
             try {
                 const data = await analyzeTextAccuracy(pdfText);
                 setAccuracyScore(data.accuracyScore);
-                setEntityVerificationResults(data.entityVerificationResults);
 
                 // Always fetch supporting articles regardless of accuracy score
                 const supportingArticles = await fetchSupportingArticles(pdfText);
@@ -49,17 +49,28 @@ export default function FactCheckScreen({ route }) {
         analyzeText();
     }, [pdfText]);
 
-    const renderEntityVerificationResults = () => {
-        if (!Array.isArray(entityVerificationResults)) {
-            return <Text style={styles.warningText}>No entity verification results available.</Text>;
+    const searchGoogleForArticle = async (articleTitle, index) => {
+        try {
+            const API_KEY = 'AIzaSyABcEV78efo3MPyYh8Pf4Q3a1IyH4MdQJE';  // Replace with your Google API key
+            const CX = 'd04047984f8654faa'; // Replace with your Custom Search Engine ID
+            const response = await axios.get(
+                `https://www.googleapis.com/customsearch/v1?q=${articleTitle}&key=${API_KEY}&cx=${CX}`
+            );
+            const firstResult = response.data.items ? response.data.items[0].link : null;
+            setSearchResults((prevResults) => ({
+                ...prevResults,
+                [index]: firstResult,
+            }));
+        } catch (error) {
+            console.error("Error fetching search results:", error);
         }
-
-        return entityVerificationResults.map((result, index) => (
-            <Text key={index} style={result === undefined ? styles.warningText : (result ? styles.successText : styles.errorText)}>
-                Entity {index + 1}: {result === undefined ? 'Could not be verified' : (result ? 'Verified' : 'Not Verified')}
-            </Text>
-        ));
     };
+
+    useEffect(() => {
+        articles.forEach((article, index) => {
+            searchGoogleForArticle(article.web, index);
+        });
+    }, [articles]);
 
     const renderSupportingArticles = () => {
         if (articles.length === 0) {
@@ -69,10 +80,21 @@ export default function FactCheckScreen({ route }) {
         return articles.map((article, index) => (
             <View key={index} style={styles.articleCard}>
                 <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
-              
-                    <Text style={styles.articleTitle}>{article.title}</Text>
-          
+                <Text style={styles.articleTitle}>{article.title}</Text>
+                <Text style={styles.articleSource}>{article.source}</Text>
+                <Text style={styles.articleTitle}>{article.web}</Text>
+                {/* Display the first search result URL */}
+                {searchResults[index] ? (
+                    <TextInput 
+                        style={styles.urlBox}
+                        value={searchResults[index]}
+                        editable={false}
+                    />
+                ) : (
+                    <Text style={styles.loadingText}>Searching...</Text>
+                )}
             </View>
+            
         ));
     };
 
@@ -103,7 +125,7 @@ export default function FactCheckScreen({ route }) {
 
                         <Text style={styles.processingText}>Processing...</Text>
                         {loading ? (
-                            <Text></Text>
+                            <ActivityIndicator size="large" color="#0FA5EF" />
                         ) : (
                             <>
                                 <View style={styles.accuracySection}>
@@ -113,7 +135,6 @@ export default function FactCheckScreen({ route }) {
                                         <Text style={styles.warningText}>The document's accuracy is below 50%. Please verify with credible sources.</Text>
                                     )}
                                 </View>
-                                
 
                                 <View style={styles.supportingArticles}>
                                     <Text style={styles.articlesLabel}>Supporting Articles:</Text>

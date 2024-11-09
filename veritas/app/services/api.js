@@ -73,8 +73,10 @@ export const analyzeTextAccuracy = async (text) => {
   }
 };
 
-// Function to analyze accuracy for a single sentence
-const analyzeSentenceAccuracy = async (sentence) => {
+
+  
+  // Function to analyze sentence accuracy and fetch supporting articles
+  const analyzeSentenceAccuracy = async (sentence) => {
     try {
       const NLP_API_URL = `https://language.googleapis.com/v1/documents:analyzeEntities?key=${GOOGLE_API_KEY}`;
       const data = {
@@ -118,7 +120,7 @@ const analyzeSentenceAccuracy = async (sentence) => {
       // If the accuracy score is below 50, fetch supporting articles
       let supportingArticles = [];
       if (accuracyScore < 50) {
-        supportingArticles = await fetchSupportingArticles(sentence);
+        supportingArticles = await fetchSupportingArticlesFromSearch(sentence); // Use the new search function here
       }
   
       // Penalize further if any false claim was found
@@ -190,3 +192,4 @@ export const fetchSupportingArticles = async (query) => {
     return [];
   }
 };
+
