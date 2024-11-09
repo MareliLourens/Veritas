@@ -45,7 +45,7 @@ export default function FactCheckScreen({ route }) {
         if (!Array.isArray(entityVerificationResults)) {
           return <Text style={styles.warningText}>No entity verification results available.</Text>;
         }
-      
+
         return entityVerificationResults.map((result, index) => {
           if (result === undefined) {
             return (
@@ -63,14 +63,16 @@ export default function FactCheckScreen({ route }) {
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1, backgroundColor: '#B7E4FA' }}>
-                <ScrollView contentContainerStyle={styles.container}>
-                    <View style={styles.uploadSection}>
-                        {pdfUrl && (
+                <ScrollView>
+                <View style={styles.container}>
+                <View style={styles.background}></View>
+                        <View style={styles.uploadSection}>
+                            {pdfUrl && (
                             <View style={styles.documentCard}>
                                 <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
                                 <View>
                                     <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
-                                    <Text style={styles.documentDate}>{new Date().toLocaleDateString()}</Text>
+                                    <Text style={styles.documentDate}>{new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
                                 </View>
                             </View>
                         )}
@@ -82,7 +84,7 @@ export default function FactCheckScreen({ route }) {
                                 {accuracyScore < 50 && <Text style={styles.warningText}>The document's accuracy is below 50%. Please verify with credible sources.</Text>}
                                 {renderEntityVerificationResults()}
                                 <Text>Supporting Articles:</Text>
-                                {/* {articles && articles.length > 0 ? (
+                                {/* {/* {articles && articles.length > 0 ? (
                                     articles.map((article, index) => (
                                         <View key={index} style={styles.articleCard}>
                                             <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
@@ -94,9 +96,15 @@ export default function FactCheckScreen({ route }) {
                                     ))
                                 ) : (
                                     <Text>No relevant articles found</Text>
-                                )} */}
+                                )}  */}
                             </>
                         )}
+
+                        </View>
+                        <View style={styles.progressBar}>
+                            <View style={styles.progress}></View>
+                        </View>
+                        <Text style={styles.processingText}>Processing</Text>
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -106,15 +114,15 @@ export default function FactCheckScreen({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#B7E4FA',
+        backgroundColor: '#FFFFFF',
         padding: 20,
     },
     background: {
-        backgroundColor: '#FFFFFF',
-        height: 700,
+        backgroundColor: '#B7E4FA',
+        height: 215,
         width: 500,
         position: 'absolute',
-        bottom: 0,
+        top: 0,
     },
     header: {
         flexDirection: 'row',

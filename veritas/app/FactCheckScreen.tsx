@@ -5,7 +5,7 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '../app/firebase';
 import { useNavigation } from '@react-navigation/native';
 // import 'whatwg-streams';  // Polyfill for ReadableStream
-import 'promise.allsettled'; 
+import 'promise.allsettled';
 import * as pdfjs from 'pdfjs-dist/es5/build/pdf';
 import { Platform } from 'react-native';
 
@@ -91,44 +91,71 @@ export default function FactCheckScreen() {
 
                         <View style={styles.uploadSection}>
                             <TouchableOpacity style={styles.touchbutton} onPress={handleDocumentLoad} disabled={loading}>
-                                <Image style={styles.uploadicon} source={require('../assets/images/upload_icon.png')} />
-                                <Text style={styles.uploadText}>Tap to upload .pdf file</Text>
-                                {pdfUrl && (
+                                {!pdfUrl ? (
+                                    // Initial state: display upload icon and text
+                                    <>
+                                        <Image style={styles.uploadicon} source={require('../assets/images/upload_icon.png')} />
+                                        <Text style={styles.uploadText}>Tap to upload .pdf file</Text>
+                                    </>
+                                ) : (
+                                    // After upload: display document card
                                     <View style={styles.documentCard}>
                                         <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
                                         <View>
                                             <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
-                                            <Text style={styles.documentDate}>20 June 2024</Text>
+                                            <Text style={styles.documentDate}>{new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
                                         </View>
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            {loading && <ActivityIndicator size="large" color="#0FA5EF" style={styles.loadingIndicator} />}
-                            
-                            <TouchableOpacity style={styles.factCheckButton} onPress={handleNavigateToCheckedScreen}>
-                                <Text style={styles.factCheckButtonText}>Fact Check</Text>
-                            </TouchableOpacity>
-                        </View>
 
+                        <TouchableOpacity style={styles.factCheckButton} onPress={handleNavigateToCheckedScreen}>
+                            <Text style={styles.factCheckButtonText}>Fact Check</Text>
+                        </TouchableOpacity>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
-        </SafeAreaProvider>
+                    <View style={styles.historytitle}>
+                        <Text style={styles.historyheader}>History</Text>
+                        <Text style={styles.viewall}>View All</Text>
+                    </View>
+                    <View style={styles.item}>
+                        <View style={styles.leftSection}>
+                            <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
+                            <View style={styles.textSection}>
+                                <Text style={styles.title}>Lions are mammals</Text>
+                                <Text style={styles.date}>20 June 2024</Text>
+                            </View>
+                        </View>
+                        <Text style={styles.percentage}>100%</Text>
+                    </View>
+                    <View style={styles.item}>
+                        <View style={styles.leftSection}>
+                            <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
+                            <View style={styles.textSection}>
+                                <Text style={styles.title}>Lions are mammals</Text>
+                                <Text style={styles.date}>20 June 2024</Text>
+                            </View>
+                        </View>
+                        <Text style={styles.percentage}>100%</Text>
+                    </View>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+        </SafeAreaProvider >
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#B7E4FA',
+        backgroundColor: '#FFFFFF',
         padding: 20,
     },
     background: {
-        backgroundColor: '#FFFFFF',
-        height: 700,
+        backgroundColor: '#B7E4FA',
+        height: 215,
         width: 500,
         position: 'absolute',
-        bottom: 0,
+        top: 0,
     },
     header: {
         flexDirection: 'row',
@@ -150,7 +177,7 @@ const styles = StyleSheet.create({
     prompttext: {
         fontSize: 16,
         color: '#808089',
-        width: '90%',
+        width: '85%',
         fontFamily: 'MontserratReg',
     },
     uploadSection: {
@@ -199,13 +226,15 @@ const styles = StyleSheet.create({
     },
     documentCard: {
         height: 86,
-        width: '100%',
+        width: '90%',
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#CBE9F8',
+        backgroundColor: '#F5F8FA',
         borderRadius: 10,
         padding: 15,
         marginBottom: 10,
+        position: 'absolute',
+        top: 15,
     },
     documentIcon: {
         width: 33,
@@ -222,5 +251,66 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#808089',
         fontFamily: 'MontserratReg',
+    },
+    historytitle: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    viewall: {
+        position: 'absolute',
+        right: 0,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#0FA5EF',
+        fontFamily: 'MontserratReg',
+    },
+    historyheader: {
+        fontSize: 20,
+        marginBottom: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+        marginTop: 17,
+    },
+    item: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#F5F8FA',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 15,
+        height: 96,
+    },
+    leftSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    icon: {
+        width: 37,
+        height: 51,
+        marginRight: 15,
+        objectFit: 'contain',
+    },
+    textSection: {
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+        marginBottom: 2,
+    },
+    date: {
+        fontSize: 16,
+        color: '#808089',
+        fontFamily: 'MontserratReg',
+    },
+    percentage: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: '#000',
     },
 });
