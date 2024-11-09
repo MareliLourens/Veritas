@@ -35,7 +35,7 @@ const analyzeSentences = async (text) => {
       console.error('Error analyzing sentences:', error);
       return [];
     }
-  };
+};
 
 // Function to analyze the accuracy of each sentence
 export const analyzeTextAccuracy = async (text) => {
@@ -62,6 +62,10 @@ export const analyzeTextAccuracy = async (text) => {
     // Step 4: Gather all supporting articles
     const allSupportingArticles = sentenceResults.flatMap(result => result.result.supportingArticles);
 
+    // Log the accuracy score and supporting articles
+    console.log(`Overall Accuracy Score: ${accuracyScore}`);
+    console.log('All Supporting Articles:', allSupportingArticles);
+
     return { accuracyScore, sentenceResults, supportingArticles: allSupportingArticles };
   } catch (error) {
     console.error('Error analyzing text accuracy:', error);
@@ -71,78 +75,98 @@ export const analyzeTextAccuracy = async (text) => {
 
 // Function to analyze accuracy for a single sentence
 const analyzeSentenceAccuracy = async (sentence) => {
-  try {
-    const NLP_API_URL = `https://language.googleapis.com/v1/documents:analyzeEntities?key=${GOOGLE_API_KEY}`;
-    const data = {
-      document: { content: sentence, type: 'PLAIN_TEXT' },
-    };
-
-    const response = await axios.post(NLP_API_URL, data);
-    console.log('NLP API response for sentence:', sentence, response.data);
-
-    // Handle missing or empty entities in the response
-    if (!response.data || !response.data.entities || response.data.entities.length === 0) {
-      console.error('No meaningful entities found in the response for sentence:', sentence);
-      return { accuracyScore: 0, supportingArticles: [] };
-    }
-
-    const entities = response.data.entities;
-
-    // Filter entities based on relevance (e.g., salience > 0.1)
-    const validEntities = entities.filter(entity => entity.salience > 0.1 && entity.type !== 'NUMBER');
-    console.log('Filtered valid entities for sentence:', validEntities);
-
-    if (validEntities.length === 0) {
-      console.error('No valid entities found for sentence:', sentence);
-      return { accuracyScore: 0, supportingArticles: [] };
-    }
-
-    // Check the accuracy for each entity in the sentence
-    const accuracyResults = await Promise.all(validEntities.map(async (entity) => {
-      try {
-        const result = await checkFactAccuracy(entity.name);
-        return result;
-      } catch (error) {
-        console.error('Error checking fact accuracy for entity:', entity.name);
-        return false;
+    try {
+      const NLP_API_URL = `https://language.googleapis.com/v1/documents:analyzeEntities?key=${GOOGLE_API_KEY}`;
+      const data = {
+        document: { content: sentence, type: 'PLAIN_TEXT' },
+      };
+  
+      const response = await axios.post(NLP_API_URL, data);
+      console.log('NLP API response for sentence:', sentence, response.data);
+  
+      // Handle missing or empty entities in the response
+      if (!response.data || !response.data.entities || response.data.entities.length === 0) {
+        console.error('No meaningful entities found in the response for sentence:', sentence);
+        return { accuracyScore: 0, supportingArticles: [] };
       }
-    }));
-
-    // Calculate the accuracy score for the sentence
-    const accuracyScore = (accuracyResults.filter(res => res).length / validEntities.length) * 100;
-
-    // Fetch supporting articles if accuracy is below threshold
-    let supportingArticles = [];
-    if (accuracyScore < 50) {
-      supportingArticles = await fetchSupportingArticles(sentence);
+  
+      const entities = response.data.entities;
+  
+      // Filter entities based on relevance (e.g., salience > 0.1)
+      const validEntities = entities.filter(entity => entity.salience > 0.1 && entity.type !== 'NUMBER');
+      console.log('Filtered valid entities for sentence:', validEntities);
+  
+      if (validEntities.length === 0) {
+        console.error('No valid entities found for sentence:', sentence);
+        return { accuracyScore: 0, supportingArticles: [] };
+      }
+  
+      // Check the accuracy for each entity in the sentence
+      const accuracyResults = await Promise.all(validEntities.map(async (entity) => {
+        try {
+          const result = await checkFactAccuracy(entity.name);
+          return result;
+        } catch (error) {
+          console.error('Error checking fact accuracy for entity:', entity.name);
+          return false;
+        }
+      }));
+  
+      // Calculate the accuracy score for the sentence
+      let accuracyScore = (accuracyResults.filter(res => res).length / validEntities.length) * 100;
+  
+      // If the accuracy score is below 50, fetch supporting articles
+      let supportingArticles = [];
+      if (accuracyScore < 50) {
+        supportingArticles = await fetchSupportingArticles(sentence);
+      }
+  
+      // Penalize further if any false claim was found
+      if (accuracyResults.includes(false)) {
+        accuracyScore -= 20; // Reduce the score by 20 for false claims
+        console.log('Penalty applied for false or mostly false claims');
+      }
+  
+      // Ensure the accuracy score doesn't go below 0
+      accuracyScore = Math.max(accuracyScore, 0);
+  
+      return { accuracyScore, supportingArticles };
+    } catch (error) {
+      console.error('Error analyzing sentence accuracy:', error);
+      return { accuracyScore: 0, supportingArticles: [] };
     }
-
-    return { accuracyScore, supportingArticles };
-  } catch (error) {
-    console.error('Error analyzing sentence accuracy:', error);
-    return { accuracyScore: 0, supportingArticles: [] };
-  }
-};
+  };
 
 // Function to check fact accuracy for a query (e.g., an entity)
 export const checkFactAccuracy = async (query) => {
-  try {
-    const FACT_CHECK_API_URL = `https://factchecktools.googleapis.com/v1alpha1/claims:search?query=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}`;
-    const response = await axios.get(FACT_CHECK_API_URL);
-    console.log('Fact-Check API response:', response.data);
-
-    // Handle empty response
-    if (!response.data || !response.data.claims || response.data.claims.length === 0) {
-      console.warn(`No fact-check claims found for: ${query}`);
-      return false;
+    try {
+      const FACT_CHECK_API_URL = `https://factchecktools.googleapis.com/v1alpha1/claims:search?query=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}`;
+      const response = await axios.get(FACT_CHECK_API_URL);
+      console.log('Fact-Check API response:', response.data);
+  
+      // Handle empty response
+      if (!response.data || !response.data.claims || response.data.claims.length === 0) {
+        console.warn(`No fact-check claims found for: ${query}`);
+        return false; // No claims found, treated as potentially false or unverified.
+      }
+  
+      // Check if the fact-check claims are false or mostly false
+      const hasFalseClaims = response.data.claims.some(claim => {
+        const rating = claim.claimReview[0]?.textualRating;
+        return rating === 'false' || rating === 'mostly false';
+      });
+  
+      if (hasFalseClaims) {
+        console.warn(`Claim for "${query}" is false or mostly false.`);
+        return false; // Return false if any claim is false or mostly false
+      }
+  
+      return true; // Return true if no false or mostly false claims found
+    } catch (error) {
+      console.error('Error checking fact accuracy:', error);
+      return false; // Treat as inaccurate in case of an error
     }
-
-    return response.data.claims.length > 0;
-  } catch (error) {
-    console.error('Error checking fact accuracy:', error);
-    return false;
-  }
-};
+  };
 
 // Function to fetch supporting articles related to a sentence or entity
 export const fetchSupportingArticles = async (query) => {
