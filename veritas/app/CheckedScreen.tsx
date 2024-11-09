@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Animated, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Animated, TextInput, Linking } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { analyzeTextAccuracy, fetchSupportingArticles } from '../app/services/api';
 import axios from 'axios';
@@ -80,21 +80,23 @@ export default function FactCheckScreen({ route }) {
         return articles.map((article, index) => (
             <View key={index} style={styles.articleCard}>
                 <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
-                <Text style={styles.articleTitle}>{article.title}</Text>
-                <Text style={styles.articleSource}>{article.source}</Text>
-
-                {/* Display the first search result URL */}
+                
+                {/* Render the clickable title if there's a search result */}
                 {searchResults[index] ? (
-                    <TextInput 
-                        style={styles.urlBox}
-                        value={searchResults[index]}
-                        editable={false}
-                    />
+                    <Text
+                        style={styles.articleTitle} // Apply the same style as the article title
+                        onPress={() => Linking.openURL(searchResults[index])} // Open URL in browser
+                    >
+                        {article.title} {/* Title remains the same */}
+                    </Text>
                 ) : (
                     <Text style={styles.loadingText}>Searching...</Text>
                 )}
+                
+                <Text style={styles.articleSource}>{article.source}</Text>
             </View>
         ));
+        
     };
 
     return (
