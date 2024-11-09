@@ -1,68 +1,108 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { analyzeTextAccuracy, fetchSupportingArticles } from '../app/services/api';
 
 export default function FactCheckScreen({ route }) {
-    const { pdfUrl, documentName, pdfText } = route.params || {}; // Destructure pdfUrl and documentName from route parameters
+    const { pdfUrl, pdfText, documentName } = route.params || {};
+    const [accuracyScore, setAccuracyScore] = useState(null);
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [entityVerificationResults, setEntityVerificationResults] = useState([]);
+
+    useEffect(() => {
+        async function analyzeText() {
+            if (!pdfText) return;
+
+            setLoading(true);
+            try {
+                console.log('Starting text analysis...');
+
+                // Send entire text to the API for analysis
+                const data = await analyzeTextAccuracy(pdfText); // Ensure that this function processes the whole text
+                console.log('Received accuracy data:', data);
+
+                setAccuracyScore(data.accuracyScore);
+                setEntityVerificationResults(data.entityVerificationResults);
+
+                if (data.accuracyScore < 50) {
+                    // Fetch supporting articles if accuracy score is below 50
+                    const supportingArticles = await fetchSupportingArticles(pdfText);
+                    setArticles(supportingArticles);
+                }
+            } catch (error) {
+                console.error('Error analyzing text:', error);
+            } finally {
+                setLoading(false);
+                console.log('Text analysis completed.');
+            }
+        }
+
+        analyzeText();
+    }, [pdfText]);
+
+    const renderEntityVerificationResults = () => {
+        if (!Array.isArray(entityVerificationResults)) {
+          return <Text style={styles.warningText}>No entity verification results available.</Text>;
+        }
+      
+        return entityVerificationResults.map((result, index) => {
+          if (result === undefined) {
+            return (
+              <Text key={index} style={styles.warningText}>Entity {index + 1} could not be verified.</Text>
+            );
+          }
+          return (
+            <Text key={index} style={result ? styles.successText : styles.errorText}>
+              Entity {index + 1}: {result ? 'Verified' : 'Not Verified'}
+            </Text>
+          );
+        });
+      };
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView style={{ flex: 1, backgroundColor: "#B7E4FA" }}>
-                <ScrollView>
-                    <View style={styles.container}>
-                        <View style={styles.background}></View>
-
-                        <View style={styles.uploadSection}>
-                            {/* Conditionally render the document information if pdfUrl is defined */}
-                            {pdfUrl && (
-                                <View style={styles.documentCard}>
-                                    <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
-                                    <View>
-                                        <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
-                                        <Text style={styles.documentDate}>20 June 2024</Text>
-                                    </View>
-                                </View>
-                            )}
-                            <Text style={styles.uploadPrompt}>Tap to upload more documents...</Text>
-                        </View>
-
-                        <View style={styles.progressBar}>
-                            <View style={styles.progress}></View>
-                        </View>
-                        <Text style={styles.processingText}>Processing</Text>
-
-                        <View style={styles.accuracySection}>
-                            <Text style={styles.accuracyLabel}>Accuracy</Text>
-                            <Text style={styles.accuracyPercentage}>100%</Text>
-                        </View>
-
-                        <View style={styles.supportingArticles}>
-                            <Text style={styles.articlesLabel}>Supporting articles</Text>
-                            <View style={styles.articleCard}>
-                                <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
+            <SafeAreaView style={{ flex: 1, backgroundColor: '#B7E4FA' }}>
+                <ScrollView contentContainerStyle={styles.container}>
+                    <View style={styles.uploadSection}>
+                        {pdfUrl && (
+                            <View style={styles.documentCard}>
+                                <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
                                 <View>
-                                    <Text style={styles.articleTitle}>Lions: Kings of the jungle</Text>
-                                    <Text style={styles.articleSource}>Website name</Text>
+                                    <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
+                                    <Text style={styles.documentDate}>{new Date().toLocaleDateString()}</Text>
                                 </View>
                             </View>
-                        </View>
+                        )}
+                        {loading ? (
+                            <ActivityIndicator size="large" color="#0FA5EF" />
+                        ) : (
+                            <>
+                                <Text>Accuracy: {accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
+                                {accuracyScore < 50 && <Text style={styles.warningText}>The document's accuracy is below 50%. Please verify with credible sources.</Text>}
+                                {renderEntityVerificationResults()}
+                                <Text>Supporting Articles:</Text>
+                                {/* {articles && articles.length > 0 ? (
+                                    articles.map((article, index) => (
+                                        <View key={index} style={styles.articleCard}>
+                                            <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
+                                            <View>
+                                                <Text style={styles.articleTitle}>{article.title}</Text>
+                                                <Text style={styles.articleSource}>{article.source}</Text>
+                                            </View>
+                                        </View>
+                                    ))
+                                ) : (
+                                    <Text>No relevant articles found</Text>
+                                )} */}
+                            </>
+                        )}
                     </View>
-                    {pdfUrl && (
-                                <View >
-                                    <Text style={styles.header}>Document: {documentName}</Text>
-                                    <Text >Extracted Text:</Text>
-                                    <View >
-                                        <Text >{pdfText}</Text>
-                                    </View>
-                                </View>
-                            )}
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
     );
 }
-
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
