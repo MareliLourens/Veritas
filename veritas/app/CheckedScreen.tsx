@@ -51,50 +51,67 @@ export default function FactCheckScreen({ route }) {
 
     const renderEntityVerificationResults = () => {
         if (!Array.isArray(entityVerificationResults)) {
-          return <Text style={styles.warningText}>No entity verification results available.</Text>;
+            return <Text style={styles.warningText}>No entity verification results available.</Text>;
         }
 
         return entityVerificationResults.map((result, index) => {
-          if (result === undefined) {
+            if (result === undefined) {
+                return (
+                    <Text key={index} style={styles.warningText}>Entity {index + 1} could not be verified.</Text>
+                );
+            }
             return (
-              <Text key={index} style={styles.warningText}>Entity {index + 1} could not be verified.</Text>
+                <Text key={index} style={result ? styles.successText : styles.errorText}>
+                    Entity {index + 1}: {result ? 'Verified' : 'Not Verified'}
+                </Text>
             );
-          }
-          return (
-            <Text key={index} style={result ? styles.successText : styles.errorText}>
-              Entity {index + 1}: {result ? 'Verified' : 'Not Verified'}
-            </Text>
-          );
         });
-      };
+    };
+
+    const renderSupportingArticles = () => {
+        if (articles.length === 0) {
+            return <Text style={styles.warningText}>No supporting articles available.</Text>;
+        }
+
+        return articles.map((article, index) => (
+            <View key={index} style={styles.articleCard}>
+                <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
+                
+                    <Text style={styles.articleTitle}>{article.title}</Text>
+               
+            </View>
+        ));
+    };
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1, backgroundColor: '#B7E4FA' }}>
                 <ScrollView>
-                <View style={styles.container}>
-                    <View style={styles.background}></View>
-                    <View style={styles.uploadSection}>
-                        {pdfUrl && (
-                            <View style={styles.documentCard}>
-                                <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
-                                <View>
-                                    <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
-                                    <Text style={styles.documentDate}>{new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+                    <View style={styles.container}>
+                        <View style={styles.background}></View>
+                        <View style={styles.uploadSection}>
+                            {pdfUrl && (
+                                <View style={styles.documentCard}>
+                                    <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
+                                    <View>
+                                        <Text style={styles.documentTitle}>{documentName || 'Document Name'}</Text>
+                                        <Text style={styles.documentDate}>{new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        )}
-                        
-                    </View>
-                    <View style={styles.progressBar}>
-                        <Animated.View style={[styles.progress, { width: progressAnim.interpolate({
-                            inputRange: [0, 100],
-                            outputRange: ['0%', '100%'],
-                        }) }]}/>
-                    </View>
-                    <Text style={styles.processingText}>Processing...</Text>
-                    {loading ? (
-                           <Text style={styles.processingText}></Text>
+                            )}
+
+                        </View>
+                        <View style={styles.progressBar}>
+                            <Animated.View style={[styles.progress, {
+                                width: progressAnim.interpolate({
+                                    inputRange: [0, 100],
+                                    outputRange: ['0%', '100%'],
+                                })
+                            }]} />
+                        </View>
+                        <Text style={styles.processingText}>Processing...</Text>
+                        {loading ? (
+                            <Text style={styles.processingText}></Text>
                         ) : (
                             <>
                                 {/* <Text>Accuracy: {accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
@@ -103,13 +120,19 @@ export default function FactCheckScreen({ route }) {
                                 <Text>Supporting Articles:</Text>
                                 Render supporting articles here */}
                                 <View style={styles.accuracySection}>
-                            <Text style={styles.accuracyLabel}>Accuracy</Text>
-                            <Text style={styles.accuracyPercentage}>{accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
-                        </View>
+                                    <Text style={styles.accuracyLabel}>Accuracy</Text>
+                                    <Text style={styles.accuracyPercentage}>{accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
+                                </View>
+
+
+                                <View style={styles.supportingArticles}>
+                                    <Text style={styles.articlesLabel}>Supporting Articles:</Text>
+                                    {renderSupportingArticles()}
+                                </View>
                             </>
                         )}
-                </View>
-                
+                    </View>
+
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -368,46 +391,50 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     articleCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: 'row',             // Keep the icon and title in a row
+        alignItems: 'center',             // Centers items vertically within the container
+        justifyContent: 'center',        // Centers the content horizontally within the container
         backgroundColor: '#F5F8FA',
         borderRadius: 15,
         padding: 15,
         height: 96,
+        width: '100%',
+        overflow: 'hidden',              // Prevents content from overflowing outside
+        flexWrap: 'nowrap',              // Prevents wrapping
+        marginBottom: 7,
     },
     articleIcon: {
         width: 53,
         height: 53,
         marginRight: 10,
     },
-    articleTitle: {
-        fontSize: 17,
-        fontWeight: 'bold',
-        color: '#001A23',
-        fontFamily: 'FuturaPTBold',
-    },
     articleSource: {
         fontSize: 16,
         color: '#808089',
         fontFamily: 'MontserratReg',
     },
-    progressBar: {
-        height: 15,
-        width: '100%',
-        backgroundColor: '#CBE9F8',
-        borderRadius: 15,
-        overflow: 'hidden',
-        marginTop: 20,
+    articleTitle: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+        flexShrink: 1, // Ensures title can shrink if needed to avoid overflow
+        flexWrap: 'wrap', // Allows title to wrap if it's too long
+        maxWidth: '90%', // Optional: limits the width of the title to ensure it doesn't overflow
     },
-    progress: {
-        height: '100%',
-        backgroundColor: '#0FA5EF',
-        borderRadius: 15,
-    },
-    processingText: {
+    warningText: {
         fontSize: 16,
-        color: '#808089',
-        textAlign: 'center',
-        marginVertical: 10,
+        color: '#FF5733',
+        fontWeight: 'bold',
+    },
+    successText: {
+        fontSize: 16,
+        color: '#2E8B57',
+        fontWeight: 'bold',
+    },
+    errorText: {
+        fontSize: 16,
+        color: '#FF6347',
+        fontWeight: 'bold',
     },
 });
