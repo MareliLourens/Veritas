@@ -30,10 +30,10 @@ export default function FactCheckScreen({ route }) {
                 setAccuracyScore(data.accuracyScore);
                 setEntityVerificationResults(data.entityVerificationResults);
 
-                if (data.accuracyScore < 50) {
-                    const supportingArticles = await fetchSupportingArticles(pdfText);
-                    setArticles(supportingArticles);
-                }
+                // Always fetch supporting articles regardless of accuracy score
+                const supportingArticles = await fetchSupportingArticles(pdfText);
+                setArticles(supportingArticles);
+
             } catch (error) {
                 console.error('Error analyzing text:', error);
             } finally {
@@ -54,18 +54,11 @@ export default function FactCheckScreen({ route }) {
             return <Text style={styles.warningText}>No entity verification results available.</Text>;
         }
 
-        return entityVerificationResults.map((result, index) => {
-            if (result === undefined) {
-                return (
-                    <Text key={index} style={styles.warningText}>Entity {index + 1} could not be verified.</Text>
-                );
-            }
-            return (
-                <Text key={index} style={result ? styles.successText : styles.errorText}>
-                    Entity {index + 1}: {result ? 'Verified' : 'Not Verified'}
-                </Text>
-            );
-        });
+        return entityVerificationResults.map((result, index) => (
+            <Text key={index} style={result === undefined ? styles.warningText : (result ? styles.successText : styles.errorText)}>
+                Entity {index + 1}: {result === undefined ? 'Could not be verified' : (result ? 'Verified' : 'Not Verified')}
+            </Text>
+        ));
     };
 
     const renderSupportingArticles = () => {
@@ -76,9 +69,9 @@ export default function FactCheckScreen({ route }) {
         return articles.map((article, index) => (
             <View key={index} style={styles.articleCard}>
                 <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
-                
+              
                     <Text style={styles.articleTitle}>{article.title}</Text>
-               
+          
             </View>
         ));
     };
@@ -99,31 +92,28 @@ export default function FactCheckScreen({ route }) {
                                     </View>
                                 </View>
                             )}
+                        </View>
 
-                        </View>
                         <View style={styles.progressBar}>
-                            <Animated.View style={[styles.progress, {
-                                width: progressAnim.interpolate({
-                                    inputRange: [0, 100],
-                                    outputRange: ['0%', '100%'],
-                                })
-                            }]} />
+                            <Animated.View style={[styles.progress, { width: progressAnim.interpolate({
+                                inputRange: [0, 100],
+                                outputRange: ['0%', '100%'],
+                            }) }]}/>
                         </View>
+
                         <Text style={styles.processingText}>Processing...</Text>
                         {loading ? (
-                            <Text style={styles.processingText}></Text>
+                            <Text></Text>
                         ) : (
                             <>
-                                {/* <Text>Accuracy: {accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
-                                {accuracyScore < 50 && <Text style={styles.warningText}>The document's accuracy is below 50%. Please verify with credible sources.</Text>}
-                                {renderEntityVerificationResults()}
-                                <Text>Supporting Articles:</Text>
-                                Render supporting articles here */}
                                 <View style={styles.accuracySection}>
                                     <Text style={styles.accuracyLabel}>Accuracy</Text>
                                     <Text style={styles.accuracyPercentage}>{accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
+                                    {accuracyScore && accuracyScore < 50 && (
+                                        <Text style={styles.warningText}>The document's accuracy is below 50%. Please verify with credible sources.</Text>
+                                    )}
                                 </View>
-
+                                
 
                                 <View style={styles.supportingArticles}>
                                     <Text style={styles.articlesLabel}>Supporting Articles:</Text>
@@ -132,7 +122,6 @@ export default function FactCheckScreen({ route }) {
                             </>
                         )}
                     </View>
-
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -392,8 +381,7 @@ const styles = StyleSheet.create({
     },
     articleCard: {
         flexDirection: 'row',             // Keep the icon and title in a row
-        alignItems: 'center',             // Centers items vertically within the container
-        justifyContent: 'center',        // Centers the content horizontally within the container
+        alignItems: 'center',           // Centers the content horizontally within the container
         backgroundColor: '#F5F8FA',
         borderRadius: 15,
         padding: 15,
@@ -403,16 +391,19 @@ const styles = StyleSheet.create({
         flexWrap: 'nowrap',              // Prevents wrapping
         marginBottom: 7,
     },
+    
     articleIcon: {
         width: 53,
         height: 53,
         marginRight: 10,
     },
+    
     articleSource: {
         fontSize: 16,
         color: '#808089',
         fontFamily: 'MontserratReg',
     },
+    
     articleTitle: {
         fontSize: 17,
         fontWeight: 'bold',
@@ -420,7 +411,7 @@ const styles = StyleSheet.create({
         fontFamily: 'FuturaPTBold',
         flexShrink: 1, // Ensures title can shrink if needed to avoid overflow
         flexWrap: 'wrap', // Allows title to wrap if it's too long
-        maxWidth: '90%', // Optional: limits the width of the title to ensure it doesn't overflow
+        maxWidth: '80%', // Optional: limits the width of the title to ensure it doesn't overflow
     },
     warningText: {
         fontSize: 16,
