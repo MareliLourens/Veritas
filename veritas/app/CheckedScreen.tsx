@@ -68,7 +68,7 @@ export default function FactCheckScreen({ route }) {
 
     useEffect(() => {
         articles.forEach((article, index) => {
-            searchGoogleForArticle(article.web, index);
+            searchGoogleForArticle(article.title, index);
         });
     }, [articles]);
 
@@ -82,7 +82,7 @@ export default function FactCheckScreen({ route }) {
                 <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
                 <Text style={styles.articleTitle}>{article.title}</Text>
                 <Text style={styles.articleSource}>{article.source}</Text>
-                <Text style={styles.articleTitle}>{article.web}</Text>
+
                 {/* Display the first search result URL */}
                 {searchResults[index] ? (
                     <TextInput 
@@ -94,7 +94,6 @@ export default function FactCheckScreen({ route }) {
                     <Text style={styles.loadingText}>Searching...</Text>
                 )}
             </View>
-            
         ));
     };
 
