@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Animated } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { analyzeTextAccuracy, fetchSupportingArticles } from '../app/services/api';
 
@@ -9,32 +9,40 @@ export default function FactCheckScreen({ route }) {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [entityVerificationResults, setEntityVerificationResults] = useState([]);
+    const progressAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         async function analyzeText() {
             if (!pdfText) return;
 
             setLoading(true);
+            progressAnim.setValue(0);  // Reset progress bar
+
+            // Start the progress bar animation
+            Animated.timing(progressAnim, {
+                toValue: 100,  // Target completion
+                duration: 3000,  // Duration
+                useNativeDriver: false,
+            }).start();
+
             try {
-                console.log('Starting text analysis...');
-
-                // Send entire text to the API for analysis
-                const data = await analyzeTextAccuracy(pdfText); // Ensure that this function processes the whole text
-                console.log('Received accuracy data:', data);
-
+                const data = await analyzeTextAccuracy(pdfText);
                 setAccuracyScore(data.accuracyScore);
                 setEntityVerificationResults(data.entityVerificationResults);
 
                 if (data.accuracyScore < 50) {
-                    // Fetch supporting articles if accuracy score is below 50
                     const supportingArticles = await fetchSupportingArticles(pdfText);
                     setArticles(supportingArticles);
                 }
             } catch (error) {
                 console.error('Error analyzing text:', error);
             } finally {
-                setLoading(false);
-                console.log('Text analysis completed.');
+                // Complete progress bar animation after loading is finished
+                Animated.timing(progressAnim, {
+                    toValue: 100,
+                    duration: 500,
+                    useNativeDriver: false,
+                }).start(() => setLoading(false));
             }
         }
 
@@ -65,9 +73,9 @@ export default function FactCheckScreen({ route }) {
             <SafeAreaView style={{ flex: 1, backgroundColor: '#B7E4FA' }}>
                 <ScrollView>
                 <View style={styles.container}>
-                <View style={styles.background}></View>
-                        <View style={styles.uploadSection}>
-                            {pdfUrl && (
+                    <View style={styles.background}></View>
+                    <View style={styles.uploadSection}>
+                        {pdfUrl && (
                             <View style={styles.documentCard}>
                                 <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
                                 <View>
@@ -76,36 +84,32 @@ export default function FactCheckScreen({ route }) {
                                 </View>
                             </View>
                         )}
-                        {loading ? (
-                            <ActivityIndicator size="large" color="#0FA5EF" />
+                        
+                    </View>
+                    <View style={styles.progressBar}>
+                        <Animated.View style={[styles.progress, { width: progressAnim.interpolate({
+                            inputRange: [0, 100],
+                            outputRange: ['0%', '100%'],
+                        }) }]}/>
+                    </View>
+                    <Text style={styles.processingText}>Processing...</Text>
+                    {loading ? (
+                           <Text style={styles.processingText}></Text>
                         ) : (
                             <>
-                                <Text>Accuracy: {accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
+                                {/* <Text>Accuracy: {accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
                                 {accuracyScore < 50 && <Text style={styles.warningText}>The document's accuracy is below 50%. Please verify with credible sources.</Text>}
                                 {renderEntityVerificationResults()}
                                 <Text>Supporting Articles:</Text>
-                                {/* {/* {articles && articles.length > 0 ? (
-                                    articles.map((article, index) => (
-                                        <View key={index} style={styles.articleCard}>
-                                            <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
-                                            <View>
-                                                <Text style={styles.articleTitle}>{article.title}</Text>
-                                                <Text style={styles.articleSource}>{article.source}</Text>
-                                            </View>
-                                        </View>
-                                    ))
-                                ) : (
-                                    <Text>No relevant articles found</Text>
-                                )}  */}
+                                Render supporting articles here */}
+                                <View style={styles.accuracySection}>
+                            <Text style={styles.accuracyLabel}>Accuracy</Text>
+                            <Text style={styles.accuracyPercentage}>{accuracyScore ? `${Math.round(accuracyScore)}%` : 'N/A'}</Text>
+                        </View>
                             </>
                         )}
-
-                        </View>
-                        <View style={styles.progressBar}>
-                            <View style={styles.progress}></View>
-                        </View>
-                        <Text style={styles.processingText}>Processing</Text>
-                    </View>
+                </View>
+                
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -337,6 +341,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     accuracySection: {
+        marginTop: 17,
         marginBottom: 20,
     },
     accuracyLabel: {
@@ -386,5 +391,23 @@ const styles = StyleSheet.create({
         color: '#808089',
         fontFamily: 'MontserratReg',
     },
-
+    progressBar: {
+        height: 15,
+        width: '100%',
+        backgroundColor: '#CBE9F8',
+        borderRadius: 15,
+        overflow: 'hidden',
+        marginTop: 20,
+    },
+    progress: {
+        height: '100%',
+        backgroundColor: '#0FA5EF',
+        borderRadius: 15,
+    },
+    processingText: {
+        fontSize: 16,
+        color: '#808089',
+        textAlign: 'center',
+        marginVertical: 10,
+    },
 });
