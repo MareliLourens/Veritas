@@ -1,6 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
-import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
@@ -18,7 +17,8 @@ export default function LoginScreen() {
 
   // Set up Google sign-in request with the client ID
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '<YOUR_GOOGLE_CLIENT_ID>',
+    clientId: '561340048771-sh9k6h4j5em87qbvg0vpj5oeo29ssh4a.apps.googleusercontent.com',
+    redirectUri: 'https://veritas-b5695.firebaseapp.com/__/auth/handler', // This should match your Firebase redirect URI
   });
 
   // Function to handle login with email and password
@@ -65,8 +65,8 @@ export default function LoginScreen() {
     <View style={styles.container_big}>
       <View style={styles.container}>
         <Image style={styles.image} source={require('../assets/images/signup.png')} />
-        <ThemedText type="title">Welcome</ThemedText>
-        <ThemedText style={styles.subtitle} type="subtitle">Start fact-checking your work</ThemedText>
+        <ThemedText type="title">Welcome Back</ThemedText>
+        <ThemedText style={styles.subtitle} type="subtitle">Want to fact check a new document?</ThemedText>
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle}>Email</ThemedText>
           <TextInput
@@ -88,16 +88,12 @@ export default function LoginScreen() {
             value={password}
           />
         </View>
-        <View style={styles.checkboxcontainer}>
-          <CheckBox
-            style={styles.checkbox}
-            value={isChecked}
-            onValueChange={setIsChecked}
-          />
-          <ThemedText type="subtitle" style={styles.checkboxtext}>Remember Me</ThemedText>
-        </View>
+        
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')}>
+          <Text style={styles.signuptext}>Not a member yet? Create an account</Text>
         </TouchableOpacity>
         <Image style={styles.signupwithimg} source={require('../assets/images/signupwith.png')} />
         <View style={styles.onlinesignupcontainer}>
@@ -170,17 +166,9 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontFamily: 'MontserratReg',
   },
-  checkboxcontainer: {
-    width: 160,
-    display: 'flex',
-    flexDirection: 'row',
-    marginLeft: -150,
-  },
-  checkbox: {
-    marginRight: 5,
-  },
-  checkboxtext: {
-    color: "#808089"
+  signuptext: {
+    color: "#808089",
+    marginTop: 10,
   },
   button: {
     width: '100%',

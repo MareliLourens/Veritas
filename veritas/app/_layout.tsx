@@ -13,6 +13,8 @@ import HistoryScreen from './HistoryScreen';
 import FactCheckScreen from './FactCheckScreen';
 import { useColorScheme } from '@/hooks/useColorScheme'; // Custom hook for managing color scheme
 import CheckedScreen from './CheckedScreen';
+import SignUpScreen from './SignUpScreen';
+
 
 SplashScreen.preventAutoHideAsync(); // Preventing the splash screen from hiding until we're ready
 
@@ -129,6 +131,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="LoginScreen"
         component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SignUpScreen"
+        component={SignUpScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
