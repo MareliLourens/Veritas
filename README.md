@@ -1,10 +1,10 @@
-## <p align="center" style="text-decoration: none !important;padding:0;margin:0;">Mareli Lourens<br> 221119 <br> Interactive Development 300 - Term 2</p>
+## <p align="center" style="text-decoration: none !important;padding:0;margin:0;">Mareli Lourens<br> 221119 <br> Interactive Development 300 - Term 4</p>
 
 <p align="center">
-  <img src="./README/Icon.png" height="75" style="display: block; margin: 0 auto;">
+  <img src="./Readme/Icon.png" height="75" style="display: block; margin: 0 auto;">
 </p>
 
-## <p align="center" style="text-decoration: none !important;padding:0;margin:0;">Cross-Platform Mobile Development</p>
+## <p align="center" style="text-decoration: none !important;padding:0;margin:0;">AI-Driven Application</p>
 
 ## Table of Contents
 
@@ -12,6 +12,7 @@
   * [Product mockup](#product-mockup)
   * [Project description](#project-description)
   * [Built With](#built-with)
+  * [Languages](#languages)
 * [Getting Started](#getting-started)
   * [How to install](#how-to-install)
 * [Features and Functionality](#features-and-functionality)
@@ -27,63 +28,62 @@
 ## About the project:
 
 ### Product mockup:
-![Mockup](./README/Product_Mockup.png)
+![Mockup](./README/mockup.png)
 
 ### Project description:
-I worked on a project to develop a cross-platform mobile application that hosts a competition where user can win a trip to a country abroad. The user needs to submit an artwork related to the specific country they would like to travel to and then it gets added to the competition. Other users can then vote for their favorite artwork and the person with the most votes wins the competition
+
+For my final project as a third-year student, I developed a fact-checking app using Google Firebase and Google Cloud’s AI services. This app is designed to combat misinformation by analyzing document accuracy, providing source credibility ratings, and offering educational tools on media literacy.
+
+Leveraging Google Cloud’s Natural Language processing, the app evaluates the accuracy of uploaded text, comparing it to credible sources and giving a percentage-based accuracy score. Firebase powers the app's backend, handling user authentication, data storage, and real-time updates. This project allowed me to apply AI in a practical way, aiming to promote informed, critical consumption of information in today’s digital landscape.
 
 ### Built with:
 * [React Native](https://reactnative.dev/)
 * [Firebase](https://firebase.google.com/)
+* [Google Cloud](https://console.cloud.google.com/welcome/new?project=axial-rigging-439517-j1)
+
+### Languages:
+* TypeScript
+* JavaScript
 
 ## Getting Started:
 
 ### How to Install:
 
-Navigate to the folder inside of your terminal and type npm install
+Once downloaded, open the folder in your Visual Studio Code and open up the terminal. Then type:
+
+```
+cd veritas
+npm install
+```
 
 ## Features and Functionality:
 
-The mobile application is structured around three primary user-facing pages. The first page serves as a login page where users who are already registered can log into the app. Alternatively if the person isn't already registered they can go to the sign up page and create their profile. After loggin in the user is directed to the homepage where they can view the top competitions as well as see a call to action button that encourages them to enter the competition and lastly a countdown timer that shows when the competitions end. The user can also view the other entries for the competitions if they navigate to the details screen. Here they're greeted with another call to action button as well as the leaderboard. Below that there is a feed view of all the entries for the competition. Finally when the user wants to enter the competiton they can navigate to the entries page.
+The app begins with a login page, where users can log in or create a new account if they haven’t registered yet. Once logged in, users are directed to the home page, where they can upload a PDF document for analysis. From there, users have two main options: they can navigate to the Fact Check page, where the app analyzes the uploaded text for accuracy using Google Cloud’s AI, providing a percentage accuracy score along with relevant supporting articles. Alternatively, users can go to the Articles page, which suggests articles related to the document’s title or content, enabling them to explore further information and gain additional context.
 
 ## Concept Process:
 
 ### Ideation:
 
-In the initial brainstorming stage of the project, I immediately thought of the app called Booking.com so I based my competition around them, acting as if I'm working for the company and creating the competition for them. (disclaimer: I'm not trying to impersonate the company and I'm working independently).
+The idea for this fact-checking app arose from the growing need to combat misinformation in today’s digital world. With so much information readily available online, it can be challenging to discern credible sources from unreliable ones, especially when biased or false content spreads so quickly. I wanted to create a tool that empowers users to critically assess information by providing AI-driven accuracy checks and access to reliable sources. Inspired by this goal, I envisioned an app that would be intuitive to use while leveraging advanced AI technology. By combining Google Cloud’s Natural Language processing capabilities with Firebase's efficient backend, I aimed to create a user-friendly application that would not only verify content but also educate users on media literacy. This vision shaped the app's core functionalities, focusing on simplicity, accuracy, and accessibility.
 
 ## Development Process
 
 ### Highlights
 
-I found the experience of working on this project to be immensely rewarding. One of the key highlights for me was learning how to develop a mobile application.
-
-Another aspect of the project that I found particularly enjoyable was the chance to further improve my understanding of how to implement crud functionality when working with a database. As a person who has worked with databases in the past, I was already familiar with the basic concepts and principles involved. However, this project allowed me to delve deeper into the topic and gain a more nuanced understanding of how databases work, specifically on how to use a firebase database, and how to troubleshoot issues that might arise. By creating my own database it helped me gain further insight into how they are structured.
-
-Overall, I feel that this project was an incredibly valuable learning experience for me. Not only did it allow me to expand my skill sets and gain a deeper understanding of key concepts and techniques, but it also gave me the opportunity to work on a real-world project with practical applications.
+One of the highlights of developing this fact-checking app was exploring the potential of AI to create real-world impact. I particularly enjoyed working with Google Cloud's Natural Language processing—it was exciting to see how the AI could analyze text accuracy and provide insightful results. Implementing Firebase was also rewarding, as it streamlined user authentication and data management, allowing me to focus more on creating a seamless user experience. Building out the app's different functionalities, from the login and registration pages to the fact-checking and articles sections, was a great opportunity to bring my ideas to life. The project pushed me to think creatively and reinforced my passion for using technology to solve meaningful problems.
 
 ### Challenges
 
-Over the duration of this project, I encountered several obstacles that stretched my skill sets and took me beyond my familiar territory. Among these challenges, a particularly noteworthy hurdle emerged in working with images in firebase storage and connecting them to my database, specifically the nested collections in the database.
-
-While the project undoubtedly presented substantial challenges, I view it as an invaluable learning journey. Navigating the complexities tied to the database that forced me to expand my developer capabilities and gain novel problem-solving insights. Reflecting on the project, a sense of accomplishment fills me as I consider what me managed to achieve.
+One of the main challenges I faced was working with the AI API to achieve reliable accuracy in fact-checking results. Although Google Cloud's Natural Language processing provided a solid foundation, it was difficult to get consistently precise outputs due to the inherent limitations of AI in understanding nuanced information. This meant that while the app could provide a general accuracy score, the results weren't always perfect, especially with complex or ambiguous text. Another hurdle was finding relevant supporting articles; ensuring they were credible and directly aligned with the document's content proved challenging. Despite these obstacles, the experience taught me a lot about handling API limitations and adapting AI outputs to create a functional, user-friendly app.
 
 ## Future Implementation
 
-Reflecting on our work on this project, there are several areas where I feel there is room for improvement and further development. One of the key areas where I would like to focus in the future is on stabilizing the code and improving consistency. While I was able to get the code working effectively for the purposes of this project, I feel that there is room for improvement in terms of streamlining the code, making it more efficient, and reducing redundancies. In addition, I would like to develop a more consistent coding style, to make the code more accessible to others and easier to maintain over time.
-
-Another area where I would like to expand and enhance the project is in making it more interactive and engaging for users. While the website is functional and provides a useful service, I believe that there is room to add more interactivity and animation to the site, in order to make it more visually appealing and engaging for users. This might involve developing new features and functionalities.
+In the future, I’d like to expand the app's functionality to enhance both accuracy and user experience. One potential improvement would be to integrate multiple AI models for cross-referencing information, which could provide more reliable accuracy scores by combining insights from various sources. Additionally, implementing a more advanced algorithm to filter and curate supporting articles would ensure that users receive the most relevant and credible information. Another future feature could include a user feedback loop, allowing users to report inaccuracies in results, which could help the AI model improve over time. 
 
 
 ## Conclusion
 
-This project has been an incredible learning experience for me, and I'm truly grateful for the opportunity to work on it. Throughout the course of the project, I have learned so much, from technical skills to project management.
-
-Working on this project has allowed me to put into practice many of the concepts and techniques I have learned in our studies, and it has also challenged me to expand my knowledge and skills. From developing the initial idea to designing and implementing the project, I have gained a deeper understanding of the software development process and the importance of effective communication and teamwork.
-
-I am particularly proud of the progress I have made in developing my programming skills. I have also gained a greater appreciation for the importance of testing and debugging, and how these skills are critical to developing high-quality software.
-
-Overall, this project has been an incredibly fulfilling experience, and I'm eager to continue working on it and implementing new features and improvements in the future.
+Developing this fact-checking app has been a rewarding journey, blending the power of AI with the need for accurate, reliable information in today’s digital age. Throughout the project, I gained hands-on experience with Google Cloud’s Natural Language processing and Firebase, which allowed me to create a functional, user-centered app that addresses the pressing issue of misinformation. Although there were challenges in achieving precise accuracy and curating credible supporting articles, the project taught me valuable lessons in managing AI’s limitations and enhancing user experience. This app is a stepping stone toward using AI responsibly and creatively to empower users with tools for critical evaluation of information. Looking ahead, I’m excited by the potential future implementations, from improving accuracy through multiple AI models to integrating user feedback for continuous improvement. Overall, this project solidified my passion for using technology to make a positive impact and highlighted the importance of accessible, reliable information in fostering an informed society.
 
 
 ## Authors
@@ -93,5 +93,5 @@ Mareli Lourens - [Find me on Github](https://github.com/MareliLourens)
 Mareli Lourens - [Email](mailto:221119@virtualwindow.co.za)
 
 ## Project Link
-View on GitHub - https://github.com/MareliLourens/dv_300_term_2.git
+View on GitHub - https://github.com/MareliLourens/Veritas.git
 
