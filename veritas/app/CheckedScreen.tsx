@@ -76,29 +76,31 @@ export default function FactCheckScreen({ route }) {
         if (articles.length === 0) {
             return <Text style={styles.warningText}>No supporting articles available.</Text>;
         }
-
+    
         return articles.map((article, index) => (
             <View key={index} style={styles.articleCard}>
                 <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
-                
-                {/* Render the clickable title if there's a search result */}
-                {searchResults[index] ? (
-                    <Text
-                        style={styles.articleTitle} // Apply the same style as the article title
-                        onPress={() => Linking.openURL(searchResults[index])} // Open URL in browser
-                    >
-                        {article.title} {/* Title remains the same */}
-                    </Text>
-                ) : (
-                    <Text style={styles.loadingText}>Searching...</Text>
-                )}
-                
-                <Text style={styles.articleSource}>{article.source}</Text>
+    
+                {/* Text container to align title and source */}
+                <View style={styles.articleTextContainer}>
+                    {/* Render the clickable title if there's a search result */}
+                    {searchResults[index] ? (
+                        <Text
+                            style={styles.articleTitle} // Apply the same style as the article title
+                            onPress={() => Linking.openURL(searchResults[index])} // Open URL in browser
+                        >
+                            {article.title} {/* Title remains the same */}
+                        </Text>
+                    ) : (
+                        <Text style={styles.loadingText}>Searching...</Text>
+                    )}
+    
+                    {/* Render the source below the title */}
+                    <Text style={styles.articleSource}>{article.source}</Text>
+                </View>
             </View>
         ));
-        
     };
-
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1, backgroundColor: '#B7E4FA' }}>
@@ -226,33 +228,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontFamily: 'FuturaPTBold',
     },
-    urlSection: {
-        marginBottom: 20,
-        width: '100%',
-    },
-    urlLabel: {
-        fontSize: 17,
-        fontWeight: 'bold',
-        color: '#001A23',
-        fontFamily: 'FuturaPTBold',
-        marginTop: 17,
-        marginBottom: 17,
-    },
-    urlInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: '#0FA5EF',
-        borderWidth: 1,
-        borderRadius: 15,
-        paddingHorizontal: 10,
-        height: 50,
-        backgroundColor: '#FFFFFF',
-    },
-    urlInput: {
-        flex: 1,
-        color: '#333',
-        paddingHorizontal: 10,
-    },
+    
     factCheckUrlButton: {
         backgroundColor: '#0FA5EF',
         paddingVertical: 10,
@@ -340,6 +316,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#001A23',
         fontFamily: 'FuturaPTBold',
+        width: 180,
+        height: 40,
     },
     documentDate: {
         fontSize: 14,
@@ -450,4 +428,33 @@ const styles = StyleSheet.create({
         color: '#FF6347',
         fontWeight: 'bold',
     },
+    articleTextContainer: {
+        flexShrink: 1,
+        flexDirection: 'column',  // Stack the title and source vertically
+        justifyContent: 'center',  // Ensures the content is centered vertically in the container
+        maxWidth: '80%',  // Limits width of text area to prevent overflow
+        
+      },
+      articleTitle: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#001A23',
+        fontFamily: 'FuturaPTBold',
+        overflow: 'hidden',  // Prevents title text overflow
+        width: 220,
+        height: 40,
+      },
+      articleSource:{
+        width: 220,
+        height: 18,
+        marginTop: 4,
+      },
+      articlesLabel: {
+        fontSize: 20,
+        fontFamily: 'FuturaPTBold',
+        color: '#001A23',
+        fontWeight: 'bold',
+        marginBottom: 10,
+        
+      },
 });
