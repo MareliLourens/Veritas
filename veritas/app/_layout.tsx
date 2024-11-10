@@ -1,30 +1,25 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { onAuthStateChanged } from 'firebase/auth'; // Importing Firebase authentication listener
-import { auth } from './firebase'; // Importing the Firebase auth instance configured in a separate file
+import { onAuthStateChanged } from 'firebase/auth'; // Firebase authentication listener
+import { auth } from './firebase'; // Importing Firebase authentication instance from firebase config
 import { Image } from 'react-native';
 import LoginScreen from './LoginScreen';
 import CustomSearchScreen from './CustomSearchScreen';
 import FactCheckScreen from './FactCheckScreen';
-import { useColorScheme } from '@/hooks/useColorScheme'; // Custom hook for managing color scheme
+import { useColorScheme } from '@/hooks/useColorScheme'; // Hook for handling color scheme (light/dark mode)
 import CheckedScreen from './CheckedScreen';
 import SignUpScreen from './SignUpScreen';
 
+SplashScreen.preventAutoHideAsync(); // Prevents the splash screen from hiding before fonts are loaded
 
-SplashScreen.preventAutoHideAsync(); // Preventing the splash screen from hiding until we're ready
+const Stack = createNativeStackNavigator(); // Stack Navigator for screen transitions
+const Tab = createBottomTabNavigator(); // Bottom Tab Navigator for the main app navigation
 
-// const documentRoutes = require('./FactCheckScreen');
-// app.use('/api/documents', documentRoutes);
-
-
-const Stack = createNativeStackNavigator(); // Creating a stack navigator for screen transitions
-const Tab = createBottomTabNavigator(); // Creating a bottom tab navigator for main tabs
-
+// Main Tabs navigation for authenticated users
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -105,48 +100,47 @@ export default function RootLayout() {
     FuturaPTBook: require('../assets/fonts/FuturaPTBook.otf'),
   });
 
-  const [loggedIn, setLoggedIn] = useState(false); // State to track user authentication status
-
+  const [loggedIn, setLoggedIn] = useState(false); // State to track if the user is logged in
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync(); // Hiding splash screen after fonts are loaded
+      SplashScreen.hideAsync();
     }
   }, [loaded]);
 
+  // Firebase authentication state listener to check if user is logged in or logged out
   useEffect(() => {
-    // Firebase auth state listener to track user login/logout
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setLoggedIn(!!user); // Updating loggedIn state based on user authentication status
+      setLoggedIn(!!user); // Updates the loggedIn state based on whether a user is authenticated
     });
-    return unsubscribe; // Cleanup function to unsubscribe from listener on component unmount
+    return unsubscribe; // Cleanup listener on component unmount
   }, []);
 
   if (!loaded) {
-    return null; // Prevent rendering until fonts are loaded
+    return null; // Wait for fonts to load before rendering the UI
   }
 
   return (
     <Stack.Navigator initialRouteName={loggedIn ? "MainTabs" : "LoginScreen"}>
-      {/* Navigating to MainTabs if the user is logged in; otherwise, show LoginScreen */}
+
       <Stack.Screen
         name="LoginScreen"
         component={LoginScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false }} // No header for the Login Screen
       />
       <Stack.Screen
         name="SignUpScreen"
         component={SignUpScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false }} // No header for the Sign-Up Screen
       />
       <Stack.Screen
         name="MainTabs"
         component={MainTabs}
-        options={{ headerShown: false }}
+        options={{ headerShown: false }} // No header for the Main Tabs Screen
       />
       <Stack.Screen
         name="FactCheckScreen"
-        component={MainTabs} // This screen is integrated within the MainTabs component
-        options={{ headerShown: false }}
+        component={MainTabs}
+        options={{ headerShown: false }} // No header for FactCheckScreen when within MainTabs
       />
     </Stack.Navigator>
   );

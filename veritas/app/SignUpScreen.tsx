@@ -1,37 +1,38 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
-import { ThemedText } from '@/components/ThemedText'; // Custom themed text component
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from './firebase';  // Firebase configuration (auth)
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native'; 
+import { ThemedText } from '@/components/ThemedText'; // Custom component, assumed to handle themed text rendering
+import React, { useState } from 'react'; 
+import { useNavigation } from '@react-navigation/native'; // React Navigation for navigating between screens
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'; // Firebase Authentication methods for user creation and profile updates
+import { auth } from './firebase';  // Firebase auth instance from the firebase configuration file
 
 export default function SignUpScreen() {
-  const [isChecked, setIsChecked] = useState(false);  // Remember Me functionality
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Hook to navigate to other screens
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');  // New state for name
-  const [gender, setGender] = useState('');  // New state for gender
+  const [email, setEmail] = useState(''); // State for email input
+  const [password, setPassword] = useState(''); // State for password input
+  const [name, setName] = useState(''); // State for user's name
+  const [gender, setGender] = useState(''); // State for user's gender (not used in backend)
 
-  // Function to handle the sign-up process
+  // Function to handle user sign-up
   const handleSignUp = async () => {
     try {
-      // Step 1: Create user with email and password
+      // Firebase method to create a new user with email and password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
   
-      // Step 2: Update user's display name
+      // Firebase method to update the newly created user's profile with their display name
       await updateProfile(user, {
-        displayName: name,  // Update display name
+        displayName: name, // Set the user's display name to the provided 'name'
       });
 
-      // Step 3: Navigate to the next screen (FactCheckScreen)
+      // Navigate to the FactCheckScreen upon successful sign-up
       navigation.navigate('FactCheckScreen');
     } catch (error) {
-      Alert.alert('Sign-Up Failed', error.message);  // Show error if sign-up fails
+      // Handle errors during sign-up and show an alert with the error message
+      Alert.alert('Sign-Up Failed', error.message);  
     }
   };
+
 
   return (
     <View style={styles.container_big}>
@@ -40,7 +41,6 @@ export default function SignUpScreen() {
         <ThemedText type="title">Welcome</ThemedText>
         <ThemedText style={styles.subtitle} type="subtitle">Start fact-checking your work</ThemedText>
 
-        {/* Email Input */}
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle}>Email</ThemedText>
           <TextInput
@@ -52,7 +52,6 @@ export default function SignUpScreen() {
           />
         </View>
 
-        {/* Password Input */}
         <View style={styles.inputcontainer}>
           <ThemedText type="minititle" style={styles.inputtitle2}>Password</ThemedText>
           <TextInput
@@ -65,12 +64,10 @@ export default function SignUpScreen() {
           />
         </View>
 
-        {/* Sign Up Button */}
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
 
-        {/* Navigation to Login Screen */}
         <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
           <Text style={styles.signuptext}>Already a member? Log In</Text>
         </TouchableOpacity>

@@ -1,100 +1,99 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from '../app/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'; // Firebase Storage functions for handling file uploads
+import { storage } from '../app/firebase'; // Firebase storage instance configured in a separate file
 import { useNavigation } from '@react-navigation/native';
-// import 'whatwg-streams';  // Polyfill for ReadableStream
 import 'promise.allsettled';
-import * as pdfjs from 'pdfjs-dist/es5/build/pdf';
+import * as pdfjs from 'pdfjs-dist/es5/build/pdf'; // PDF.js library to extract text from PDF files
 import { Platform } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
-import { uploadAndSaveDocument } from '../app/services/BucketService'; // Import the upload service
+import * as DocumentPicker from 'expo-document-picker'; // Expo's DocumentPicker for picking documents
 
-// Check the platform and configure the worker accordingly
+// Setup PDF worker for non-web platforms
 if (Platform.OS !== 'web') {
-    // Set the workerSrc for React Native environment
     pdfjs.GlobalWorkerOptions.workerSrc = require('pdfjs-dist/es5/build/pdf.worker.entry');
 } else {
-    // Use the default worker path for web
+    // For web, use a CDN link to the PDF worker
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 }
 
 export default function FactCheckScreen() {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
-    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-    const [documentName, setDocumentName] = useState<string | null>(null);
-    const [pdfText, setPdfText] = useState<string>('');
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null); // Store the URL of the uploaded PDF
+    const [documentName, setDocumentName] = useState<string | null>(null); // Store the document name
+    const [pdfText, setPdfText] = useState<string>(''); // Store the extracted text from the PDF
 
-    // Function to handle document selection, upload to Firebase, and text extraction
+    // Function to handle document selection, upload to Firebase, and text extraction from the PDF
     const handleDocumentSelectionAndUpload = async () => {
-        setLoading(true);
+        setLoading(true); // Set loading state to true while the document is being processed
         try {
+            // Open the document picker for PDF selection
             const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
             console.log("Result from DocumentPicker:", result);
-    
+
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 const document = result.assets[0];
-                setDocumentName(document.name);
-    
-                // Clean the document title (remove .pdf extension)
-                const cleanedTitle = document.name.endsWith('.pdf') ? document.name.slice(0, -4) : document.name;
-                console.log('Cleaned Title:', cleanedTitle); // Log the cleaned title
-    
-                // Save the cleaned title in a constant
-                const documentTitle = cleanedTitle; // You can now use `documentTitle` as needed
-    
-                // Upload to Firebase Storage
+                setDocumentName(document.name); // Save document name
+
+                const cleanedTitle = document.name.endsWith('.pdf') ? document.name.slice(0, -4) : document.name; // Clean the document title
+                console.log('Cleaned Title:', cleanedTitle);
+
+                const documentTitle = cleanedTitle; // Assign cleaned title for future use
+
+                // Create a reference to the Firebase storage location where the PDF will be stored
                 const fileRef = ref(storage, `pdfs/${document.name}`);
+                // Fetch the PDF from the picked file URI, convert it to a blob, and upload it to Firebase Storage
                 const pdfBytes = await fetch(document.uri).then(res => res.blob());
-                await uploadBytes(fileRef, pdfBytes); // Upload the blob to Firebase Storage
-                const url = await getDownloadURL(fileRef); // Get the URL for the uploaded PDF
-    
-                setPdfUrl(url);
+                await uploadBytes(fileRef, pdfBytes); // Upload file to Firebase
+                // After upload, retrieve the download URL from Firebase
+                const url = await getDownloadURL(fileRef);
+                setPdfUrl(url); // Set the PDF URL
+
                 console.log("Uploaded PDF URL:", url);
-    
-                // Fetch the PDF file for text extraction
+
+                // Once the PDF is uploaded, extract text content from it using pdf.js
                 const pdfDoc = await pdfjs.getDocument({ url }).promise;
-                const text = await extractTextFromPdf(pdfDoc);
-    
-                // Set the extracted text in state
-                setPdfText(text);
+                const text = await extractTextFromPdf(pdfDoc); // Extract text from PDF
+                setPdfText(text); // Set the extracted text
+
                 console.log("Extracted PDF Text:", text);
             } else {
                 console.log("Document picking canceled or unsuccessful.");
             }
         } catch (error) {
-            console.error("Error during document selection, upload, or processing:", error);
+            console.error("Error during document selection, upload, or processing:", error); // Handle any errors
         } finally {
-            setLoading(false);
+            setLoading(false); // Set loading to false after processing
         }
     };
 
-    // Function to extract text from a PDF using pdf.js
+    // Function to extract text from the PDF document using PDF.js
     const extractTextFromPdf = async (pdfDoc: any) => {
         let fullText = '';
-        const numPages = pdfDoc.numPages;
+        const numPages = pdfDoc.numPages; // Get the number of pages in the PDF
 
+        // Loop through each page in the PDF and extract its text content
         for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
             const page = await pdfDoc.getPage(pageNumber);
             const textContent = await page.getTextContent();
             const pageText = textContent.items.map((item: any) => item.str).join(' ');
-            fullText += pageText + '\n';
+            fullText += pageText + '\n'; // Append the text of each page to the full text
         }
-        return fullText;
+        return fullText; // Return the extracted text
     };
 
+    // Function to navigate to the Checked screen with the uploaded document's details
     const handleNavigateToCheckedScreen = () => {
         if (pdfUrl && documentName) {
-            navigation.navigate('Checked', { pdfUrl, documentName, pdfText });
+            navigation.navigate('Checked', { pdfUrl, documentName, pdfText }); // Pass the PDF URL, document name, and extracted text to the Checked screen
         }
     };
 
+    // Function to navigate to the CustomSearch screen with the cleaned document title
     const handleNavigateToSearchScreen = () => {
         if (documentName) {
-            navigation.navigate('CustomSearch', { cleanedTitle: documentName });
-
+            navigation.navigate('CustomSearch', { cleanedTitle: documentName }); // Pass the document name to the CustomSearch screen
         }
     };
 
@@ -114,13 +113,11 @@ export default function FactCheckScreen() {
                         <View style={styles.uploadSection}>
                             <TouchableOpacity style={styles.touchbutton} onPress={handleDocumentSelectionAndUpload} disabled={loading}>
                                 {!pdfUrl ? (
-                                    // Initial state: display upload icon and text
                                     <>
                                         <Image style={styles.uploadicon} source={require('../assets/images/upload_icon.png')} />
                                         <Text style={styles.uploadText}>Tap to upload .pdf file</Text>
                                     </>
                                 ) : (
-                                    // After upload: display document card
                                     <View style={styles.documentCard}>
                                         <Image style={styles.documentIcon} source={require('../assets/images/document_icon.png')} />
                                         <View>
@@ -138,7 +135,7 @@ export default function FactCheckScreen() {
                                 <Text style={styles.factCheckButtonText}>Search Based on PDF Title</Text>
                             </TouchableOpacity>
                         </View>
-                        
+
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -176,12 +173,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#001A23',
         fontFamily: 'FuturaPTBold',
-    },
-    prompttext: {
-        fontSize: 16,
-        color: '#808089',
-        width: '85%',
-        fontFamily: 'MontserratReg',
     },
     uploadSection: {
         backgroundColor: '#F5F8FA',
@@ -224,9 +215,6 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontFamily: 'FuturaPTBold',
     },
-    loadingIndicator: {
-        marginTop: 15,
-    },
     documentCard: {
         height: 86,
         width: '90%',
@@ -258,27 +246,6 @@ const styles = StyleSheet.create({
         color: '#808089',
         fontFamily: 'MontserratReg',
     },
-    historytitle: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    viewall: {
-        position: 'absolute',
-        right: 0,
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#0FA5EF',
-        fontFamily: 'MontserratReg',
-    },
-    historyheader: {
-        fontSize: 20,
-        marginBottom: 17,
-        fontWeight: 'bold',
-        color: '#001A23',
-        fontFamily: 'FuturaPTBold',
-        marginTop: 17,
-    },
     item: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -289,18 +256,11 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         height: 96,
     },
-    leftSection: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
     icon: {
         width: 37,
         height: 51,
         marginRight: 15,
         objectFit: 'contain',
-    },
-    textSection: {
-        justifyContent: 'center',
     },
     title: {
         fontSize: 17,
@@ -313,10 +273,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#808089',
         fontFamily: 'MontserratReg',
-    },
-    percentage: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        color: '#000',
     },
 });

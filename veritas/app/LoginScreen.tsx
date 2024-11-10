@@ -1,60 +1,58 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth, provider } from './firebase';
-import * as Google from 'expo-auth-session/providers/google';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native'; 
+import { ThemedText } from '@/components/ThemedText'; // Custom component, assumed to handle themed text rendering
+import React, { useState } from 'react'; 
+import { useNavigation } from '@react-navigation/native'; // React Navigation for navigating between screens
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'; // Firebase Authentication methods
+import { auth } from './firebase'; // Firebase auth instance from the firebase configuration file
+import * as Google from 'expo-auth-session/providers/google'; // Expo package for handling Google authentication via OAuth
 
 export default function LoginScreen() {
-  // State to track checkbox for "Remember Me" functionality
-  const [isChecked, setIsChecked] = useState(false);
-  // Navigation object to switch screens
-  const navigation = useNavigation();
-  // State variables to store email and password input values
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigation = useNavigation(); // Hook to navigate to other screens
+  const [email, setEmail] = useState(''); // State for email input
+  const [password, setPassword] = useState(''); // State for password input
 
-  // Set up Google sign-in request with the client ID
+  // Google authentication request configuration using Expo's Google OAuth provider
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '561340048771-sh9k6h4j5em87qbvg0vpj5oeo29ssh4a.apps.googleusercontent.com',
+    clientId: '561340048771-sh9k6h4j5em87qbvg0vpj5oeo29ssh4a.apps.googleusercontent.com', // Client ID for OAuth
   });
 
-  // Function to handle login with email and password
+  // Function to handle login using email and password through Firebase Authentication
   const handleLogin = async () => {
     try {
-      // Sign in using Firebase authentication
+      // Firebase method for signing in with email and password
       await signInWithEmailAndPassword(auth, email, password);
       // Navigate to the FactCheckScreen upon successful login
       navigation.navigate('FactCheckScreen');
     } catch (error) {
-      // Alert the user if login fails
+      // Display error alert if login fails
       Alert.alert('Login Failed');
     }
   };
 
-  // Function to handle Google Sign-In
+  // Function to handle Google Sign-In through Expo's Google OAuth provider
   const handleGoogleSignIn = async () => {
     try {
-      // Prompt the user for Google sign-in and get the result
+      // Trigger the Google login flow
       const result = await promptAsync();
-      // Check if the sign-in was successful
+      
+      // If login is successful, extract the id_token from the response
       if (result?.type === 'success') {
-        // Extract the id_token from the result parameters
         const { id_token } = result.params;
-        // Create a credential with the id_token for Firebase authentication
+        
+        // Create a Firebase credential using the id_token
         const credential = GoogleAuthProvider.credential(id_token);
-        // Sign in with the credential in Firebase
+        
+        // Sign in the user with the generated Firebase credential
         const userCredential = await signInWithCredential(auth, credential);
-        // Get the logged-in user's information
+        
         const user = userCredential.user;
-        // Log the user's email to the console
-        console.log('Logged in with Google: ', user.email);
+        console.log('Logged in with Google: ', user.email); // Log the email of the logged-in user
+        
         // Navigate to the FactCheckScreen upon successful login
         navigation.navigate('FactCheckScreen');
       }
     } catch (error) {
-      // Log and alert the user if Google sign-in fails
+      // Log and alert the user if there was an error during Google sign-in
       console.error('Google Sign-In Error: ', error);
       Alert.alert('Google Sign-In Failed', error.message);
     }
@@ -199,12 +197,12 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontFamily: 'MontserratReg',
     display: 'flex',
-    alignItems: 'center', // Centers items vertically within the container
-    flexDirection: 'row', // Places the icon and text next to each other
+    alignItems: 'center', 
+    flexDirection: 'row', 
   },
   onlineicon: {
     objectFit: 'contain',
-    height: 30, // Adds space between the icon and the text
+    height: 30, 
     marginLeft: 15,
   },
   signupgoogle: {
