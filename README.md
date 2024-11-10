@@ -1,7 +1,7 @@
 ## <p align="center" style="text-decoration: none !important;padding:0;margin:0;">Mareli Lourens<br> 221119 <br> Interactive Development 300 - Term 4</p>
 
 <p align="center">
-  <img src="./Readme/Icon.png" height="75" style="display: block; margin: 0 auto;">
+  <img src="./Readme/icon.png" height="75" style="display: block; margin: 0 auto;">
 </p>
 
 ## <p align="center" style="text-decoration: none !important;padding:0;margin:0;">AI-Driven Application</p>
