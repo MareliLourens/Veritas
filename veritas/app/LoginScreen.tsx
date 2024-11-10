@@ -18,6 +18,7 @@ export default function LoginScreen() {
   // Set up Google sign-in request with the client ID
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '561340048771-sh9k6h4j5em87qbvg0vpj5oeo29ssh4a.apps.googleusercontent.com',
+    redirectUri: 'https://veritas-b5695.firebaseapp.com/__/auth/handler', // This should match your Firebase redirect URI
   });
 
   // Function to handle login with email and password

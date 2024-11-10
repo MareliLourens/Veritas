@@ -91,9 +91,10 @@ export default function FactCheckScreen() {
                     <View style={styles.container}>
                         <View style={styles.background}></View>
                         <View style={styles.header}>
-                            <Image style={styles.appimage} source={require('../assets/images/icon.png')} />
+                            <Image style={styles.profileimage} source={require('../assets/images/placeholder_profile.png')} />
                             <View>
-                                <Text style={styles.greetingText}>Veritas</Text>
+                                <Text style={styles.prompttext}>What do you want to fact check today?</Text>
+                                <Text style={styles.greetingText}>Hi Mareli</Text>
                             </View>
                         </View>
 
@@ -170,9 +171,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
-    appimage: {
-        width: 32,
-        height: 32,
+    profileimage: {
+        width: 62,
+        height: 62,
         borderRadius: 25,
         marginRight: 10,
     },
