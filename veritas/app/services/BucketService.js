@@ -1,22 +1,6 @@
-import { collection, addDoc } from "firebase/firestore";
-import { firestore } from "../firebase";
-
-// Save document URL to Firestore
-export const saveDocumentUrlToFirestore = async (downloadURL, collectionName, docData) => {
-    try {
-        const docRef = await addDoc(collection(firestore, collectionName), {
-            ...docData,
-            fileUrl: downloadURL,
-            createdAt: new Date()
-        });
-        console.log('Document written with ID: ', docRef.id);
-    } catch (e) {
-        console.error("Error adding document: ", e);
-    }
-};
-
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { storage, firestore } from "../firebase";
 
 // Handle document upload
 export const handleUploadOfDocument = async (uri, fileName) => {
@@ -36,17 +20,28 @@ export const handleUploadOfDocument = async (uri, fileName) => {
         });
 
         const documentRef = ref(storage, fileName);
-
-        const uploadResult = await uploadBytes(documentRef, blob);
-
+        await uploadBytes(documentRef, blob);
         blob.close();
 
         const downloadURL = await getDownloadURL(documentRef);
-
         return downloadURL;
     } catch (error) {
         console.error("Error uploading document: ", error);
         throw error;
+    }
+};
+
+// Save document URL to Firestore
+export const saveDocumentUrlToFirestore = async (downloadURL, collectionName, docData) => {
+    try {
+        const docRef = await addDoc(collection(firestore, collectionName), {
+            ...docData,
+            fileUrl: downloadURL,
+            createdAt: new Date(),
+        });
+        console.log('Document written with ID: ', docRef.id);
+    } catch (e) {
+        console.error("Error adding document: ", e);
     }
 };
 
@@ -55,8 +50,9 @@ export const uploadAndSaveDocument = async (uri, fileName, collectionName, docDa
     try {
         const downloadURL = await handleUploadOfDocument(uri, fileName);
         await saveDocumentUrlToFirestore(downloadURL, collectionName, docData);
+        return downloadURL;
     } catch (error) {
         console.error("Error during the upload and save process: ", error);
+        throw error;
     }
 };
-

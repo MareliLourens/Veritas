@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { getDownloadURL, ref } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../app/firebase';
 import { useNavigation } from '@react-navigation/native';
 // import 'whatwg-streams';  // Polyfill for ReadableStream
 import 'promise.allsettled';
 import * as pdfjs from 'pdfjs-dist/es5/build/pdf';
 import { Platform } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
+import { uploadAndSaveDocument } from '../app/services/BucketService'; // Import the upload service
 
 // Check the platform and configure the worker accordingly
 if (Platform.OS !== 'web') {
@@ -23,33 +25,40 @@ export default function FactCheckScreen() {
     const [loading, setLoading] = useState(false);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [documentName, setDocumentName] = useState<string | null>(null);
-    const [pdfText, setPdfText] = useState<string>(''); // Variable to store extracted PDF text
+    const [pdfText, setPdfText] = useState<string>('');
 
-    const handleDocumentLoad = async () => {
+    // Function to handle document selection, upload to Firebase, and text extraction
+    const handleDocumentSelectionAndUpload = async () => {
         setLoading(true);
         try {
-            // Reference to the PDF file in Firebase Storage
-            const pdfRef = ref(storage, 'sample.pdf');  // Ensure this path is correct
-            const url = await getDownloadURL(pdfRef); // Fetch the download URL for the PDF
+            const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
+            console.log("Result from DocumentPicker:", result);
 
-            // Set the state to hold the URL and document name
-            setPdfUrl(url);
-            setDocumentName('sample.pdf');
-            console.log("PDF URL:", url);
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const document = result.assets[0];
+                setDocumentName(document.name);
 
-            // Fetch the PDF file from the URL and extract text
-            const pdfBytes = await fetch(url).then((res) => res.arrayBuffer());
-            const pdfDoc = await pdfjs.getDocument(pdfBytes).promise;
+                // Upload to Firebase Storage
+                const fileRef = ref(storage, `pdfs/${document.name}`);
+                const pdfBytes = await fetch(document.uri).then(res => res.blob());
+                await uploadBytes(fileRef, pdfBytes); // Upload the blob to Firebase Storage
+                const url = await getDownloadURL(fileRef); // Get the URL for the uploaded PDF
 
-            // Extract text from the PDF document
-            const text = await extractTextFromPdf(pdfDoc);
+                setPdfUrl(url);
+                console.log("Uploaded PDF URL:", url);
 
-            // Set extracted text in state and log it
-            setPdfText(text);
-            console.log("Extracted PDF Text:", text);
+                // Fetch the PDF file for text extraction
+                const pdfDoc = await pdfjs.getDocument({ url }).promise;
+                const text = await extractTextFromPdf(pdfDoc);
 
+                // Set the extracted text in state
+                setPdfText(text);
+                console.log("Extracted PDF Text:", text);
+            } else {
+                console.log("Document picking canceled or unsuccessful.");
+            }
         } catch (error) {
-            console.error("Error loading or processing PDF:", error);
+            console.error("Error during document selection, upload, or processing:", error);
         } finally {
             setLoading(false);
         }
@@ -62,9 +71,9 @@ export default function FactCheckScreen() {
 
         for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
             const page = await pdfDoc.getPage(pageNumber);
-            const textContent = await page.getTextContent(); // Get text content from page
-            const pageText = textContent.items.map((item: any) => item.str).join(' '); // Join all the text items into one string
-            fullText += pageText + '\n'; // Append text from all pages
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map((item: any) => item.str).join(' ');
+            fullText += pageText + '\n';
         }
         return fullText;
     };
@@ -90,7 +99,7 @@ export default function FactCheckScreen() {
                         </View>
 
                         <View style={styles.uploadSection}>
-                            <TouchableOpacity style={styles.touchbutton} onPress={handleDocumentLoad} disabled={loading}>
+                            <TouchableOpacity style={styles.touchbutton} onPress={handleDocumentSelectionAndUpload} disabled={loading}>
                                 {!pdfUrl ? (
                                     // Initial state: display upload icon and text
                                     <>
