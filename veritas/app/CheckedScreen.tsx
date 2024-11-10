@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     documentCard: {
-        height: 86,
+        height: 96,
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',

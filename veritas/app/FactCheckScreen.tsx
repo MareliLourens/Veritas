@@ -33,24 +33,31 @@ export default function FactCheckScreen() {
         try {
             const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
             console.log("Result from DocumentPicker:", result);
-
+    
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 const document = result.assets[0];
                 setDocumentName(document.name);
-
+    
+                // Clean the document title (remove .pdf extension)
+                const cleanedTitle = document.name.endsWith('.pdf') ? document.name.slice(0, -4) : document.name;
+                console.log('Cleaned Title:', cleanedTitle); // Log the cleaned title
+    
+                // Save the cleaned title in a constant
+                const documentTitle = cleanedTitle; // You can now use `documentTitle` as needed
+    
                 // Upload to Firebase Storage
                 const fileRef = ref(storage, `pdfs/${document.name}`);
                 const pdfBytes = await fetch(document.uri).then(res => res.blob());
                 await uploadBytes(fileRef, pdfBytes); // Upload the blob to Firebase Storage
                 const url = await getDownloadURL(fileRef); // Get the URL for the uploaded PDF
-
+    
                 setPdfUrl(url);
                 console.log("Uploaded PDF URL:", url);
-
+    
                 // Fetch the PDF file for text extraction
                 const pdfDoc = await pdfjs.getDocument({ url }).promise;
                 const text = await extractTextFromPdf(pdfDoc);
-
+    
                 // Set the extracted text in state
                 setPdfText(text);
                 console.log("Extracted PDF Text:", text);
@@ -81,6 +88,13 @@ export default function FactCheckScreen() {
     const handleNavigateToCheckedScreen = () => {
         if (pdfUrl && documentName) {
             navigation.navigate('Checked', { pdfUrl, documentName, pdfText });
+        }
+    };
+
+    const handleNavigateToSearchScreen = () => {
+        if (documentName) {
+            navigation.navigate('CustomSearch', { cleanedTitle: documentName });
+
         }
     };
 
@@ -117,37 +131,17 @@ export default function FactCheckScreen() {
                                 )}
                             </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.factCheckButton} onPress={handleNavigateToCheckedScreen}>
-                            <Text style={styles.factCheckButtonText}>Fact Check</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.historytitle}>
-                        <Text style={styles.historyheader}>History</Text>
-                        <Text style={styles.viewall}>View All</Text>
-                    </View>
-                    <View style={styles.item}>
-                        <View style={styles.leftSection}>
-                            <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
-                            <View style={styles.textSection}>
-                                <Text style={styles.title}>Lions are mammals</Text>
-                                <Text style={styles.date}>20 June 2024</Text>
-                            </View>
+                            <TouchableOpacity style={styles.factCheckButton} onPress={handleNavigateToCheckedScreen}>
+                                <Text style={styles.factCheckButtonText}>Fact Check</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleNavigateToSearchScreen} style={styles.factCheckButton}>
+                                <Text style={styles.factCheckButtonText}>Search Based on PDF Title</Text>
+                            </TouchableOpacity>
                         </View>
-                        <Text style={styles.percentage}>100%</Text>
+                        
                     </View>
-                    <View style={styles.item}>
-                        <View style={styles.leftSection}>
-                            <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
-                            <View style={styles.textSection}>
-                                <Text style={styles.title}>Lions are mammals</Text>
-                                <Text style={styles.date}>20 June 2024</Text>
-                            </View>
-                        </View>
-                        <Text style={styles.percentage}>100%</Text>
-                    </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                </ScrollView>
+            </SafeAreaView>
         </SafeAreaProvider >
     );
 }
@@ -157,6 +151,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFFFF',
         padding: 20,
+        height: 645,
     },
     background: {
         backgroundColor: '#B7E4FA',
@@ -191,12 +186,12 @@ const styles = StyleSheet.create({
     uploadSection: {
         backgroundColor: '#F5F8FA',
         borderRadius: 15,
-        height: 436,
+        height: 560,
         alignItems: 'center',
         padding: 20,
     },
     touchbutton: {
-        height: 340,
+        height: 390,
         width: '100%',
         backgroundColor: '#B7E4FA',
         borderRadius: 15,
@@ -251,9 +246,12 @@ const styles = StyleSheet.create({
     },
     documentTitle: {
         fontSize: 16,
+        width: 180,
+        height: 40,
         fontWeight: 'bold',
         color: '#001A23',
         fontFamily: 'FuturaPTBold',
+        overflow: 'hidden',
     },
     documentDate: {
         fontSize: 14,

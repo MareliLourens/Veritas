@@ -9,7 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth'; // Importing Firebase authen
 import { auth } from './firebase'; // Importing the Firebase auth instance configured in a separate file
 import { Image } from 'react-native';
 import LoginScreen from './LoginScreen';
-import HistoryScreen from './HistoryScreen';
+import CustomSearchScreen from './CustomSearchScreen';
 import FactCheckScreen from './FactCheckScreen';
 import { useColorScheme } from '@/hooks/useColorScheme'; // Custom hook for managing color scheme
 import CheckedScreen from './CheckedScreen';
@@ -79,8 +79,8 @@ function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="History"
-        component={HistoryScreen}
+        name="CustomSearch"
+        component={CustomSearchScreen}
         options={{
           tabBarLabel: '',
           tabBarIcon: ({ color }) => (
