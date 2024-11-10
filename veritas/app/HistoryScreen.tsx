@@ -1,26 +1,41 @@
+import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { RootState } from '../app/store';
+import { ThemedText } from '@/components/ThemedText';
+
+interface HistoryItem {
+  id: number;
+  title: string;
+  date: string;
+  percentage: number;
+}
+
+const data: HistoryItem[] = [
+  { id: 1, title: 'Lions are mammals', date: '20 June 2024', percentage: 100 },
+  { id: 2, title: 'Capitec debt', date: '20 June 2024', percentage: 75 },
+  { id: 3, title: 'Document Name', date: 'Date', percentage: 0 }
+];
 
 export default function HistoryScreen() {
-  const history = useSelector((state: RootState) => state.history.history);
-
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.item}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.date}>{item.date}</Text>
+      <View style={styles.leftSection}>
+        <Image style={styles.icon} source={require('../assets/images/document_icon.png')} />
+        <View style={styles.textSection}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.date}>{item.date}</Text>
+        </View>
+      </View>
       <Text style={styles.percentage}>{item.percentage}%</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>History</Text>
+      <View style={styles.background}></View>
+      <ThemedText type="title" style={styles.header}>History</ThemedText>
       <FlatList
-        data={history}
+        data={data}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `${index}`}
       />
     </View>
   );
@@ -29,30 +44,76 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 15,
+    backgroundColor: '#B7E4FA',
+    paddingTop: 35,
+    paddingHorizontal: 20,
+  },
+  background: {
+    backgroundColor: '#FFFFFF',
+    height: 700,
+    width: 500,
+    position: 'absolute',
+    bottom: 0,
   },
   header: {
     fontSize: 20,
-    fontWeight: 'bold',
     marginBottom: 20,
+    color: '#000',
   },
   item: {
-    backgroundColor: '#F0F0F0',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#F5F8FA',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    height: 96,
+  },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 37,
+    height: 51,
+    marginRight: 15,
+    objectFit: 'contain',
+  },
+  textSection: {
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 2,
   },
   date: {
-    fontSize: 14,
-    color: '#7E7E7E',
+    fontSize: 16,
+    color: '#808089',
+    fontFamily: 'MontserratReg',
   },
   percentage: {
-    fontSize: 16,
+    fontSize: 32,
     fontWeight: 'bold',
+    color: '#000',
+  },
+  navBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    elevation: 10,
+  },
+  navIcon: {
+    width: 30,
+    height: 30,
   },
 });
