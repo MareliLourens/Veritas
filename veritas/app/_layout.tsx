@@ -13,6 +13,16 @@ import FactCheckScreen from './FactCheckScreen';
 import { useColorScheme } from '@/hooks/useColorScheme'; // Hook for handling color scheme (light/dark mode)
 import CheckedScreen from './CheckedScreen';
 import SignUpScreen from './SignUpScreen';
+import { LogBox } from 'react-native';
+
+// Ignore specific warnings
+LogBox.ignoreLogs([
+  'Warning: ...', // Add specific warnings you want to ignore
+]);
+
+// Or, to ignore all warnings
+LogBox.ignoreAllLogs(true);
+
 
 SplashScreen.preventAutoHideAsync(); // Prevents the splash screen from hiding before fonts are loaded
 
