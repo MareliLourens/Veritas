@@ -87,7 +87,7 @@ export default function LoginScreen() {
             value={password}
           />
         </View>
-        
+
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
@@ -96,11 +96,10 @@ export default function LoginScreen() {
         </TouchableOpacity>
         <Image style={styles.signupwithimg} source={require('../assets/images/signupwith.png')} />
         <View style={styles.onlinesignupcontainer}>
-          <TouchableOpacity onPress={handleGoogleSignIn}>
+          <TouchableOpacity onPress={handleGoogleSignIn} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image style={styles.onlineicon} source={require('../assets/images/google.png')} />
+            <Text style={styles.signupgoogle}>Log in with Google</Text>
           </TouchableOpacity>
-          <Image style={styles.onlineicon} source={require('../assets/images/facebook.png')} />
-          <Image style={styles.onlineicon} source={require('../assets/images/apple.png')} />
         </View>
       </View>
     </View>
@@ -192,11 +191,26 @@ const styles = StyleSheet.create({
   },
   onlinesignupcontainer: {
     width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#0FA5EF',
+    borderRadius: 15,
+    fontSize: 16,
+    paddingLeft: 20,
+    fontFamily: 'MontserratReg',
     display: 'flex',
-    flexDirection: 'row',
+    alignItems: 'center', // Centers items vertically within the container
+    flexDirection: 'row', // Places the icon and text next to each other
   },
   onlineicon: {
     objectFit: 'contain',
-    height: 50,
+    height: 30, // Adds space between the icon and the text
+    marginLeft: 15,
+  },
+  signupgoogle: {
+    marginLeft: -15,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: 'FuturaPTBold',
   },
 });
