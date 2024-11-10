@@ -28,7 +28,7 @@
 ## About the project:
 
 ### Product mockup:
-![Mockup](./README/mockup.png)
+![Mockup](./Readme/mockup.png)
 
 ### Project description:
 
