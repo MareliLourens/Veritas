@@ -1,22 +1,25 @@
-// Firebase setup file
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBsQDTFYgkdUPsT65xjF574Y8a3JWUVni0",
-  authDomain: "dv300-term2.firebaseapp.com",
-  projectId: "dv300-term2",
-  storageBucket: "dv300-term2.appspot.com",
-  messagingSenderId: "523570035139",
-  appId: "1:523570035139:web:f55cdc8954ad5fac752576"
+  apiKey: "AIzaSyCOQiAJnlUSDJBOcTHdiJUD_AhuptJc8I0",
+  authDomain: "veritas-b5695.firebaseapp.com",
+  projectId: "veritas-b5695",
+  storageBucket: "veritas-b5695.appspot.com",
+  messagingSenderId: "561340048771",
+  appId: "1:561340048771:web:1f51eb99e888c4dfbd82b6",
+  measurementId: "G-BMJKL7LJQE"
 };
 
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only if it hasn't been initialized yet
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const provider = new GoogleAuthProvider();
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);  // Use db consistently
-export const storage = getStorage(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app, "gs://veritas-b5695");
 export const realtimeDB = getDatabase(app);
+export { provider };
