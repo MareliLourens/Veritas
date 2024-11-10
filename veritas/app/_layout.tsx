@@ -14,6 +14,9 @@ import FactCheckScreen from './FactCheckScreen';
 import { useColorScheme } from '@/hooks/useColorScheme'; // Custom hook for managing color scheme
 import CheckedScreen from './CheckedScreen';
 
+import { store } from './store';
+import { Provider } from 'react-redux';
+
 SplashScreen.preventAutoHideAsync(); // Preventing the splash screen from hiding until we're ready
 
 // const documentRoutes = require('./FactCheckScreen');
@@ -25,6 +28,7 @@ const Tab = createBottomTabNavigator(); // Creating a bottom tab navigator for m
 
 function MainTabs() {
   return (
+    <Provider store={store}>
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
@@ -94,6 +98,7 @@ function MainTabs() {
         }}
       />
     </Tab.Navigator>
+    </Provider>
   );
 }
 

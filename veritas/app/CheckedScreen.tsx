@@ -2,6 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Animated, TextInput, Linking } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { analyzeTextAccuracy, fetchSupportingArticles } from '../app/services/api';
+import { addHistoryItem } from '../app/historySlice';
+import { useDispatch } from 'react-redux';  // Add missing import for useDispatch
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
 export default function FactCheckScreen({ route }) {
@@ -11,43 +14,60 @@ export default function FactCheckScreen({ route }) {
     const [loading, setLoading] = useState(true);
     const [searchResults, setSearchResults] = useState({});
     const progressAnim = useRef(new Animated.Value(0)).current;
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     useEffect(() => {
         async function analyzeText() {
             if (!pdfText) return;
-
+    
             setLoading(true);
             progressAnim.setValue(0);  // Reset progress bar
-
-            // Start the progress bar animation
+    
             Animated.timing(progressAnim, {
-                toValue: 100,  // Target completion
-                duration: 3000,  // Duration
+                toValue: 100,
+                duration: 3000,
                 useNativeDriver: false,
             }).start();
-
+    
             try {
+                // Analyze the accuracy score of the current PDF
                 const data = await analyzeTextAccuracy(pdfText);
-                setAccuracyScore(data.accuracyScore);
-
-                // Always fetch supporting articles regardless of accuracy score
+                const currentAccuracyScore = data.accuracyScore;  // Store the current accuracy score
+    
+                setAccuracyScore(currentAccuracyScore);
+    
+                // Fetch supporting articles related to the PDF content
                 const supportingArticles = await fetchSupportingArticles(pdfText);
                 setArticles(supportingArticles);
-
+    
+                // Dispatch the history item only after the analysis is complete
+                dispatch(
+                    addHistoryItem({
+                        title: documentName || 'Unknown Document',
+                        date: new Date().toLocaleDateString(),
+                        percentage: currentAccuracyScore || 0,  // Use current accuracy score here
+                    })
+                );
+    
             } catch (error) {
                 console.error('Error analyzing text:', error);
             } finally {
-                // Complete progress bar animation after loading is finished
+                // Handle progress bar animation once analysis is complete
                 Animated.timing(progressAnim, {
                     toValue: 100,
                     duration: 500,
                     useNativeDriver: false,
-                }).start(() => setLoading(false));
+                }).start(() => {
+                    setLoading(false);
+                    navigation.navigate('History');  // Navigate to history screen
+                });
             }
         }
-
-        analyzeText();
-    }, [pdfText]);
+    
+        analyzeText();  // Run the analysis
+    }, [pdfText, documentName, dispatch, navigation]);
+    
 
     const searchGoogleForArticle = async (articleTitle, index) => {
         try {
@@ -80,7 +100,7 @@ export default function FactCheckScreen({ route }) {
         return articles.map((article, index) => (
             <View key={index} style={styles.articleCard}>
                 <Image style={styles.articleIcon} source={require('../assets/images/web_icon.png')} />
-                
+
                 {/* Render the clickable title if there's a search result */}
                 {searchResults[index] ? (
                     <Text
@@ -92,11 +112,10 @@ export default function FactCheckScreen({ route }) {
                 ) : (
                     <Text style={styles.loadingText}>Searching...</Text>
                 )}
-                
+
                 <Text style={styles.articleSource}>{article.source}</Text>
             </View>
         ));
-        
     };
 
     return (
@@ -118,10 +137,12 @@ export default function FactCheckScreen({ route }) {
                         </View>
 
                         <View style={styles.progressBar}>
-                            <Animated.View style={[styles.progress, { width: progressAnim.interpolate({
-                                inputRange: [0, 100],
-                                outputRange: ['0%', '100%'],
-                            }) }]}/>
+                            <Animated.View style={[styles.progress, {
+                                width: progressAnim.interpolate({
+                                    inputRange: [0, 100],
+                                    outputRange: ['0%', '100%'],
+                                })
+                            }]} />
                         </View>
 
                         <Text style={styles.processingText}>Processing...</Text>
@@ -413,19 +434,19 @@ const styles = StyleSheet.create({
         flexWrap: 'nowrap',              // Prevents wrapping
         marginBottom: 7,
     },
-    
+
     articleIcon: {
         width: 53,
         height: 53,
         marginRight: 10,
     },
-    
+
     articleSource: {
         fontSize: 16,
         color: '#808089',
         fontFamily: 'MontserratReg',
     },
-    
+
     articleTitle: {
         fontSize: 17,
         fontWeight: 'bold',
