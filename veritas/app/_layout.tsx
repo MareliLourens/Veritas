@@ -14,6 +14,7 @@ import { useColorScheme } from '@/hooks/useColorScheme'; // Hook for handling co
 import CheckedScreen from './CheckedScreen';
 import SignUpScreen from './SignUpScreen';
 import { LogBox } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
 // Ignore specific warnings
 LogBox.ignoreLogs([
@@ -130,6 +131,7 @@ export default function RootLayout() {
   }
 
   return (
+    <NavigationContainer>
     <Stack.Navigator initialRouteName={loggedIn ? "MainTabs" : "LoginScreen"}>
 
       <Stack.Screen
@@ -153,5 +155,6 @@ export default function RootLayout() {
         options={{ headerShown: false }} // No header for FactCheckScreen when within MainTabs
       />
     </Stack.Navigator>
+    </NavigationContainer>
   );
 }
